@@ -1,0 +1,8 @@
+{
+  "languageLabel": "Language",
+  "loading": "Loading help articles…",
+  "error": "Failed to load FAQ. Please try again later.",
+  "empty": "No FAQ articles available.",
+  "pageTitle": "FAQ & Help Center",
+  "pageSubtitle": "Find answers to common questions about SwiftChain."
+}

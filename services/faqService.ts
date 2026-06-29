@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { Locale } from '@/contexts/LanguageContext';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
@@ -17,9 +18,9 @@ export interface FaqCategory {
 export type FaqResponse = FaqCategory[];
 
 export const faqService = {
-  async getFaqs(): Promise<FaqResponse> {
+  async getFaqs(locale: Locale = 'en'): Promise<FaqResponse> {
     const { data } = await axios.get<FaqResponse>(
-      `${API_BASE_URL}/api/faq`,
+      `${API_BASE_URL}/api/faq?lang=${locale}`,
     );
     return data;
   },
