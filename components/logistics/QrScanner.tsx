@@ -8,6 +8,7 @@ export const QrScanner: React.FC = () => {
     startCamera();
     return () => {
       stopCamera();
+      
     };
   }, [startCamera, stopCamera]);
 

@@ -9,6 +9,7 @@ interface QrScannerHookResult {
   verifyMutation: ReturnType<typeof useMutation>;
   startCamera: () => Promise<void>;
   stopCamera: () => void;
+  
 }
 
 export function useQrScanner(): QrScannerHookResult {
