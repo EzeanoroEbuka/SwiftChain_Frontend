@@ -1,147 +1,129 @@
-import axios from 'axios';
-import { TransactionResponse } from '@/types/transaction';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
-const STELLAR_TESTNET_EXPLORER = 'https://testnet.steexp.com/tx/';
-const STELLAR_PUBLIC_EXPLORER = 'https://steexp.com/tx/';
-
-export interface ConnectResponse {
-  success: boolean;
-  message: string;
-  publicKey: string;
+export interface WalletBalance {
+  available: number;
+  locked: number;
+  pending: number;
+  total: number;
+  currency: string;
 }
 
-export interface DisconnectResponse {
-  success: boolean;
-  message: string;
+export interface BalanceCheckResult {
+  hasSufficientBalance: boolean;
+  balance: WalletBalance;
+  requiredAmount: number;
 }
 
-export interface BalanceResponse {
-  success: boolean;
-  balance: number;
-  message?: string;
-}
+class WalletService {
+  private static instance: WalletService;
+  private balanceCache: WalletBalance | null = null;
+  private lastFetchTime: number = 0;
+  private readonly CACHE_DURATION = 30000; // 30 seconds
 
-export interface Signer {
-  publicKey: string;
-  weight: number;
-  approved: boolean;
-}
+  private constructor() {}
 
-export interface PendingMultiSigOperation {
-  operationId: string;
-  transactionEnvelope: string;
-  description: string;
-  signaturesRequired: number;
-  currentSignatures: number;
-  signers: Signer[];
-  createdAt: string;
-  status: 'pending' | 'signed' | 'rejected' | 'expired';
-  expiresAt: string;
-}
-
-export interface PendingMultiSigResponse {
-  success: boolean;
-  message: string;
-  operations?: PendingMultiSigOperation[];
-  totalCount?: number;
-}
-
-export interface SignMultiSigParams {
-  operationId: string;
-  signature: string;
-  signerPublicKey: string;
-}
-
-export interface SignMultiSigResponse {
-  success: boolean;
-  message: string;
-  transactionHash?: string;
-  operationId?: string;
-  currentSignatures?: number;
-}
-
-/**
- * walletService — responsible for all wallet-related API communication.
- * The hook calls this; components never call this directly.
- */
-export const walletService = {
-  /**
-   * Registers the Freighter wallet session with the backend.
-   * The backend verifies the public key and returns a confirmed session.
-   */
-  async connect(publicKey: string): Promise<ConnectResponse> {
-    const { data } = await axios.post<ConnectResponse>(
-      `${API_BASE_URL}/api/wallet/connect`,
-      { publicKey }
-    );
-    return data;
-  },
-
-  async disconnect(): Promise<DisconnectResponse> {
-    const { data } = await axios.post<DisconnectResponse>(
-      `${API_BASE_URL}/api/wallet/disconnect`
-    );
-    return data;
-  },
+  static getInstance(): WalletService {
+    if (!WalletService.instance) {
+      WalletService.instance = new WalletService();
+    }
+    return WalletService.instance;
+  }
 
   /**
-   * Fetch the XLM balance for the given wallet address from the backend.
-   * The backend is the single source of truth — no Stellar SDK calls in the browser.
+   * Fetch wallet balance from backend API
+   * Uses cache to prevent unnecessary API calls
    */
-  async getBalance(address: string): Promise<BalanceResponse> {
-    const { data } = await axios.get<BalanceResponse>(
-      `${API_BASE_URL}/api/wallet/balance`,
-      { params: { address } }
-    );
-    return data;
-  },
+  async fetchBalance(forceRefresh = false): Promise<WalletBalance> {
+    // Check cache first
+    if (!forceRefresh && this.isCacheValid()) {
+      return this.balanceCache!;
+    }
+
+    try {
+      const response = await fetch('/api/wallet/balance', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch balance: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      // Validate response structure
+      const balance: WalletBalance = {
+        available: data.data.available || 0,
+        locked: data.data.locked || 0,
+        pending: data.data.pending || 0,
+        total: data.data.total || 0,
+        currency: data.data.currency || 'USD',
+      };
+
+      // Update cache
+      this.balanceCache = balance;
+      this.lastFetchTime = Date.now();
+
+      return balance;
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      // Return cached balance if available, otherwise default
+      if (this.balanceCache) {
+        return this.balanceCache;
+      }
+      throw error;
+    }
+  }
 
   /**
-   * Poll the backend for the transaction status.
-   * Returns current status and Stellar explorer URL.
-   * Backend queries Horizon to determine if transaction was confirmed.
+   * Check if user has sufficient balance for a transaction
    */
-  async getTransactionStatus(transactionHash: string): Promise<TransactionResponse> {
-    const { data } = await axios.get<TransactionResponse>(
-      `${API_BASE_URL}/api/wallet/transaction/${transactionHash}`
-    );
-    
-    // Append explorer URL based on network
-    const network = process.env.NEXT_PUBLIC_STELLAR_NETWORK || 'testnet';
-    const explorerBase = network === 'public' ? STELLAR_PUBLIC_EXPLORER : STELLAR_TESTNET_EXPLORER;
-    
+  async checkSufficientBalance(requiredAmount: number): Promise<BalanceCheckResult> {
+    const balance = await this.fetchBalance();
+    const hasSufficient = balance.available >= requiredAmount;
+
     return {
-      ...data,
-      stellarExplorerUrl: `${explorerBase}${transactionHash}`,
+      hasSufficientBalance: hasSufficient,
+      balance,
+      requiredAmount,
     };
-  },
+  }
 
   /**
-   * Fetch pending multi-signature operations requiring the connected wallet's approval.
-   * The backend queries the blockchain for unsigned transactions pending this signer's approval.
+   * Get cached balance immediately (synchronous)
+   * Used for optimistic UI updates
    */
-  async getPendingMultiSigOperations(
-    walletAddress: string
-  ): Promise<PendingMultiSigResponse> {
-    const { data } = await axios.get<PendingMultiSigResponse>(
-      `${API_BASE_URL}/api/wallet/multi-sig/pending`,
-      { params: { walletAddress } }
-    );
-    return data;
-  },
+  getCachedBalance(): WalletBalance | null {
+    return this.balanceCache;
+  }
 
   /**
-   * Submit a signed transaction envelope for a multi-sig operation.
-   * The backend verifies the signature and broadcasts the transaction if all signatures are collected.
+   * Pre-fetch balance for future use
    */
-  async signMultiSigOperation(
-    params: SignMultiSigParams
-  ): Promise<SignMultiSigResponse> {
-    const { data } = await axios.post<SignMultiSigResponse>(
-      `${API_BASE_URL}/api/wallet/multi-sig/sign`,
-      params
+  async prefetchBalance(): Promise<void> {
+    try {
+      await this.fetchBalance();
+    } catch (error) {
+      // Silently fail - we'll try again later
+      console.debug('Balance prefetch failed:', error);
+    }
+  }
+
+  private isCacheValid(): boolean {
+    return (
+      this.balanceCache !== null &&
+      Date.now() - this.lastFetchTime < this.CACHE_DURATION
     );
-    return data;
-  },
-};
+  }
+
+  /**
+   * Clear the cache (useful for logout or balance updates)
+   */
+  clearCache(): void {
+    this.balanceCache = null;
+    this.lastFetchTime = 0;
+  }
+}
+
+export const walletService = WalletService.getInstance();
