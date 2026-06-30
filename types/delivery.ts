@@ -15,6 +15,7 @@ export interface Delivery {
   status: 'PENDING' | 'ACCEPTED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED';
   origin: string;
   destination: string;
+  landmark?: string | null;
   escrowStatus: EscrowStatus;
   amount: number;
   currency?: string;
