@@ -1,0 +1,1 @@
+export { EscrowLock } from './EscrowLock';

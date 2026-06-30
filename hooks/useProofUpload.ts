@@ -27,12 +27,12 @@ interface UseProofUploadReturn {
   isCompressing: boolean;
   uploadedProofs: UploadedProof[];
   errors: string[];
-   
+
   handleFileCapture: (_file: File) => Promise<void>;
-   
+
   handleCameraCapture: (_canvas: HTMLCanvasElement) => Promise<void>;
   clearUploadedProofs: () => void;
-   
+
   removeProof: (_filename: string) => void;
 }
 
@@ -51,7 +51,13 @@ export function useProofUpload({
   const [isCompressing, setIsCompressing] = useState(false);
   const [uploadedProofs, setUploadedProofs] = useState<UploadedProof[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
-  const { error: toastError, success: toastSuccess, loading: toastLoading, info: toastInfo } = useToast();
+  const {
+    error: toastError,
+    success: toastSuccess,
+    loading: toastLoading,
+    info: toastInfo,
+    toast,
+  } = useToast();
 
   const handleFileCapture = useCallback(
     async (file: File) => {
@@ -93,8 +99,11 @@ export function useProofUpload({
           },
         };
 
-        const { file: compressedFile, isCompressed, originalSize } =
-          await proofService.compressImage(file, compressionOptions);
+        const {
+          file: compressedFile,
+          isCompressed,
+          originalSize,
+        } = await proofService.compressImage(file, compressionOptions);
 
         setIsCompressing(false);
         setCompressionProgress(100);
@@ -189,11 +198,9 @@ export function useProofUpload({
 
         // Create File from blob
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const file = new File(
-          [blob],
-          `proof-${timestamp}.jpg`,
-          { type: 'image/jpeg' }
-        );
+        const file = new File([blob], `proof-${timestamp}.jpg`, {
+          type: 'image/jpeg',
+        });
 
         // Upload the captured image
         await handleFileCapture(file);
