@@ -1,9 +1,13 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, type ReactElement, type ChangeEvent } from 'react';
 import { AlertCircle, Upload, X, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useDisputeForm, DisputeFormData, OpenDisputeResponse } from '@/hooks/useDisputeForm';
+import {
+  useDisputeForm,
+  DisputeFormData,
+  OpenDisputeResponse,
+} from '@/hooks/useDisputeForm';
 
 interface DisputeFormProps {
   deliveryId: string;
@@ -15,10 +19,26 @@ interface DisputeFormProps {
 type FormStep = 'dispute_reason' | 'evidence' | 'confirmation' | 'success';
 
 const DISPUTE_REASONS = [
-  { value: 'damaged_items', label: 'Items Damaged', description: 'Items arrived damaged or broken' },
-  { value: 'non_delivery', label: 'Non-Delivery', description: 'Items were not delivered' },
-  { value: 'incorrect_items', label: 'Incorrect Items', description: 'Wrong items were delivered' },
-  { value: 'other', label: 'Other Issue', description: 'Something else went wrong' },
+  {
+    value: 'damaged_items',
+    label: 'Items Damaged',
+    description: 'Items arrived damaged or broken',
+  },
+  {
+    value: 'non_delivery',
+    label: 'Non-Delivery',
+    description: 'Items were not delivered',
+  },
+  {
+    value: 'incorrect_items',
+    label: 'Incorrect Items',
+    description: 'Wrong items were delivered',
+  },
+  {
+    value: 'other',
+    label: 'Other Issue',
+    description: 'Something else went wrong',
+  },
 ] as const;
 
 /**
@@ -36,14 +56,15 @@ function ConfirmationDialog({
   onConfirm: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
-}): JSX.Element {
+}): ReactElement {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === overlayRef.current && !isSubmitting) onCancel();
   };
 
-  const reasonLabel = DISPUTE_REASONS.find(r => r.value === reason)?.label || reason;
+  const reasonLabel =
+    DISPUTE_REASONS.find((r) => r.value === reason)?.label || reason;
 
   return (
     <div
@@ -59,27 +80,41 @@ function ConfirmationDialog({
           <AlertCircle className="h-8 w-8 text-amber-600" />
         </div>
 
-        <h2 id="confirmation-modal-title" className="text-center text-lg font-semibold text-gray-900 mb-2">
+        <h2
+          id="confirmation-modal-title"
+          className="text-center text-lg font-semibold text-gray-900 mb-2"
+        >
           Confirm Dispute
         </h2>
         <p className="text-center text-sm text-gray-600 mb-6">
-          Opening a dispute will freeze the escrow funds during arbitration. Confirm your dispute details below.
+          Opening a dispute will freeze the escrow funds during arbitration.
+          Confirm your dispute details below.
         </p>
 
         <div className="rounded-xl border border-amber-100 bg-amber-50 p-4 mb-6 space-y-3">
           <div>
-            <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Dispute Reason</p>
-            <p className="text-sm font-medium text-gray-900 mt-1">{reasonLabel}</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+              Dispute Reason
+            </p>
+            <p className="text-sm font-medium text-gray-900 mt-1">
+              {reasonLabel}
+            </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Description</p>
-            <p className="text-sm text-gray-700 mt-1 break-words">{description}</p>
+            <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+              Description
+            </p>
+            <p className="text-sm text-gray-700 mt-1 break-words">
+              {description}
+            </p>
           </div>
         </div>
 
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 mb-6">
           <p className="text-sm text-red-800">
-            <strong>⚠️ Important:</strong> Your funds will be locked in escrow during arbitration. You will not be able to withdraw them until the dispute is resolved.
+            <strong>⚠️ Important:</strong> Your funds will be locked in escrow
+            during arbitration. You will not be able to withdraw them until the
+            dispute is resolved.
           </p>
         </div>
 
@@ -122,27 +157,32 @@ function SuccessView({
 }: {
   disputeId?: string;
   transactionHash?: string;
-}): JSX.Element {
+}): ReactElement {
   return (
     <div className="text-center py-12">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 mx-auto mb-4">
         <CheckCircle2 className="h-8 w-8 text-green-600" />
       </div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Dispute Submitted</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        Dispute Submitted
+      </h2>
       <p className="text-gray-600 mb-6">
-        Your dispute has been successfully opened. The escrow funds are now frozen.
+        Your dispute has been successfully opened. The escrow funds are now
+        frozen.
       </p>
       {disputeId && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
           <p className="text-sm text-blue-900">
-            <strong>Dispute ID:</strong> <code className="font-mono">{disputeId}</code>
+            <strong>Dispute ID:</strong>{' '}
+            <code className="font-mono">{disputeId}</code>
           </p>
         </div>
       )}
       {transactionHash && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
           <p className="text-sm text-gray-700 break-all">
-            <strong>Transaction:</strong> <code className="font-mono text-xs">{transactionHash}</code>
+            <strong>Transaction:</strong>{' '}
+            <code className="font-mono text-xs">{transactionHash}</code>
           </p>
         </div>
       )}
@@ -152,7 +192,7 @@ function SuccessView({
 
 /**
  * DisputeForm Component - Multi-step form for opening a delivery dispute
- * 
+ *
  * Flow:
  * 1. Select dispute reason
  * 2. Upload evidence files
@@ -164,7 +204,7 @@ export default function DisputeForm({
   walletAddress,
   onSuccess,
   onError,
-}: DisputeFormProps): JSX.Element {
+}: DisputeFormProps): ReactElement | null {
   const {
     register,
     handleSubmit,
@@ -176,7 +216,9 @@ export default function DisputeForm({
 
   const [currentStep, setCurrentStep] = useState<FormStep>('dispute_reason');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [successData, setSuccessData] = useState<OpenDisputeResponse | null>(null);
+  const [successData, setSuccessData] = useState<OpenDisputeResponse | null>(
+    null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedReason = watch('reason');
@@ -192,9 +234,11 @@ export default function DisputeForm({
       return;
     }
 
-    const validFiles = files.filter(file => {
+    const validFiles = files.filter((file) => {
       if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
-        toast.error(`${file.name} is not a supported format. Use images or PDF.`);
+        toast.error(
+          `${file.name} is not a supported format. Use images or PDF.`
+        );
         return false;
       }
       if (file.size > 10 * 1024 * 1024) {
@@ -255,14 +299,21 @@ export default function DisputeForm({
     return (
       <div className="w-full max-w-2xl mx-auto p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Open a Dispute</h1>
-          <p className="text-gray-600">Step 1 of 3: Select the reason for your dispute</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Open a Dispute
+          </h1>
+          <p className="text-gray-600">
+            Step 1 of 3: Select the reason for your dispute
+          </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Transaction ID */}
           <div>
-            <label htmlFor="transactionId" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="transactionId"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Transaction ID <span className="text-red-500">*</span>
             </label>
             <input
@@ -278,7 +329,9 @@ export default function DisputeForm({
               aria-invalid={!!errors.transactionId}
             />
             {errors.transactionId && (
-              <p className="mt-1 text-sm text-red-600" role="alert">{errors.transactionId.message}</p>
+              <p className="mt-1 text-sm text-red-600" role="alert">
+                {errors.transactionId.message}
+              </p>
             )}
           </div>
 
@@ -305,19 +358,26 @@ export default function DisputeForm({
                   />
                   <div className="ml-3">
                     <p className="font-medium text-gray-900">{reason.label}</p>
-                    <p className="text-sm text-gray-600">{reason.description}</p>
+                    <p className="text-sm text-gray-600">
+                      {reason.description}
+                    </p>
                   </div>
                 </label>
               ))}
             </div>
             {errors.reason && (
-              <p className="mt-2 text-sm text-red-600" role="alert">{errors.reason.message}</p>
+              <p className="mt-2 text-sm text-red-600" role="alert">
+                {errors.reason.message}
+              </p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -334,9 +394,13 @@ export default function DisputeForm({
             />
             <div className="mt-2 flex justify-between">
               {errors.description && (
-                <p className="text-sm text-red-600" role="alert">{errors.description.message}</p>
+                <p className="text-sm text-red-600" role="alert">
+                  {errors.description.message}
+                </p>
               )}
-              <p className="text-xs text-gray-500">{description?.length || 0}/500</p>
+              <p className="text-xs text-gray-500">
+                {description?.length || 0}/500
+              </p>
             </div>
           </div>
 
@@ -367,15 +431,20 @@ export default function DisputeForm({
     return (
       <div className="w-full max-w-2xl mx-auto p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Upload Evidence</h1>
-          <p className="text-gray-600">Step 2 of 3: Attach photo evidence to support your dispute</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Upload Evidence
+          </h1>
+          <p className="text-gray-600">
+            Step 2 of 3: Attach photo evidence to support your dispute
+          </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-6">
           {/* File Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Evidence Files <span className="text-gray-500">(optional, max 5 files)</span>
+              Evidence Files{' '}
+              <span className="text-gray-500">(optional, max 5 files)</span>
             </label>
 
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
@@ -406,14 +475,18 @@ export default function DisputeForm({
             {/* Uploaded Files List */}
             {uploadedFiles.length > 0 && (
               <div className="mt-4 space-y-2">
-                <p className="text-sm font-medium text-gray-900">Uploaded Files ({uploadedFiles.length})</p>
+                <p className="text-sm font-medium text-gray-900">
+                  Uploaded Files ({uploadedFiles.length})
+                </p>
                 {uploadedFiles.map((file, index) => (
                   <div
                     key={`${file.name}-${index}`}
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {file.name}
+                      </p>
                       <p className="text-xs text-gray-500">
                         {(file.size / 1024 / 1024).toFixed(2)} MB
                       </p>

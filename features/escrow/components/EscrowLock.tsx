@@ -26,8 +26,14 @@ export function EscrowLock({
 }: EscrowLockProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [state, setState] = useState<LockState>('idle');
-  const { isLoading, error, escrowId, transactionHash, lockEscrow, reset } = useEscrowLock();
-  const { toast } = useToast();
+  const { isLoading, error, escrowId, transactionHash, lockEscrow, reset } =
+    useEscrowLock();
+  const {
+    error: toastError,
+    success: toastSuccess,
+    loading: toastLoading,
+    info: toastInfo,
+  } = useToast();
 
   const isWalletConnected = !!walletAddress;
   const formattedAmount = amount.toFixed(2);
@@ -48,7 +54,7 @@ export function EscrowLock({
   const handleConfirm = async () => {
     setShowConfirmation(false);
     setState('pending');
-    
+
     try {
       await lockEscrow({
         deliveryId,
@@ -56,7 +62,7 @@ export function EscrowLock({
         currency,
         walletAddress: walletAddress!,
       });
-      
+
       setState('success');
       toast({
         title: 'Success!',
@@ -64,7 +70,8 @@ export function EscrowLock({
       });
       onSuccess?.(escrowId!, transactionHash!);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to lock escrow';
+      const errorMsg =
+        err instanceof Error ? err.message : 'Failed to lock escrow';
       setState('error');
       toast({
         title: 'Error',
@@ -99,7 +106,9 @@ export function EscrowLock({
             Your escrow payment has been securely locked.
           </p>
           <div className="bg-gray-50 dark:bg-gray-700 rounded p-3 w-full mb-4">
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Transaction Hash</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+              Transaction Hash
+            </p>
             <p className="text-sm font-mono text-gray-900 dark:text-white break-all">
               {transactionHash}
             </p>
@@ -146,7 +155,9 @@ export function EscrowLock({
     <>
       <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         <div className="text-center mb-6">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Cost</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            Total Cost
+          </p>
           <p className="text-4xl font-bold text-gray-900 dark:text-white">
             {formattedAmount} {currency}
           </p>
@@ -179,8 +190,8 @@ export function EscrowLock({
             isLoading
               ? 'bg-blue-500 text-white cursor-wait'
               : isWalletConnected
-              ? 'bg-primary text-white hover:bg-primary-dark'
-              : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+                ? 'bg-primary text-white hover:bg-primary-dark'
+                : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
           }`}
         >
           {isLoading ? (
@@ -197,7 +208,9 @@ export function EscrowLock({
         </button>
 
         <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-          {isWalletConnected ? 'Wallet connected' : 'Wallet status: disconnected'}
+          {isWalletConnected
+            ? 'Wallet connected'
+            : 'Wallet status: disconnected'}
         </p>
       </div>
 

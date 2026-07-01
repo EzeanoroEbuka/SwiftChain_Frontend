@@ -49,6 +49,22 @@ export interface LockEscrowResponse {
   lockedAmount: string;
 }
 
+export interface OpenDisputeParams {
+  deliveryId: string;
+  transactionId: string;
+  reason: 'damaged_items' | 'non_delivery' | 'incorrect_items' | 'other';
+  description: string;
+  evidenceFiles?: File[];
+  walletAddress: string;
+}
+
+export interface OpenDisputeResponse {
+  success: boolean;
+  message: string;
+  disputeId?: string;
+  transactionHash?: string;
+}
+
 /**
  * escrowService — responsible for all escrow-related API communication.
  * The hook calls this; components never call this directly.
@@ -80,6 +96,14 @@ export const escrowService = {
   async lockEscrow(params: LockEscrowParams): Promise<LockEscrowResponse> {
     const { data } = await axios.post<LockEscrowResponse>(
       `${API_BASE_URL}/api/escrow/lock`,
+      params
+    );
+    return data;
+  },
+
+  async openDispute(params: OpenDisputeParams): Promise<OpenDisputeResponse> {
+    const { data } = await axios.post<OpenDisputeResponse>(
+      `${API_BASE_URL}/api/escrow/dispute`,
       params
     );
     return data;

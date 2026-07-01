@@ -1,11 +1,13 @@
 'use client';
 
 import { useCallback } from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { escrowService, OpenDisputeParams, OpenDisputeResponse } from '@/services/escrowService';
+export type { OpenDisputeResponse } from '@/services/escrowService';
 
 /**
  * Zod validation schema for the dispute form.
@@ -27,13 +29,9 @@ const DisputeFormSchema = z.object({
 
 export type DisputeFormData = z.infer<typeof DisputeFormSchema>;
 
-interface UseDisputeFormReturn {
-  register: ReturnType<typeof useForm>['register'];
-  handleSubmit: ReturnType<typeof useForm>['handleSubmit'];
-  formState: ReturnType<typeof useForm>['formState'];
-  watch: ReturnType<typeof useForm>['watch'];
-  setValue: ReturnType<typeof useForm>['setValue'];
-  reset: ReturnType<typeof useForm>['reset'];
+interface UseDisputeFormReturn extends Pick<UseFormReturn<DisputeFormData>,
+  'register' | 'handleSubmit' | 'formState' | 'watch' | 'setValue' | 'reset'
+> {
   submitDispute: (
     formData: DisputeFormData,
     deliveryId: string,
@@ -58,14 +56,7 @@ interface UseDisputeFormReturn {
  * The component never calls the service directly.
  */
 export function useDisputeForm(): UseDisputeFormReturn {
-  const {
-    register,
-    handleSubmit,
-    formState,
-    watch,
-    setValue,
-    reset,
-  } = useForm<DisputeFormData>({
+  const form = useForm<DisputeFormData>({
     resolver: zodResolver(DisputeFormSchema),
     mode: 'onBlur',
     defaultValues: {
@@ -75,6 +66,15 @@ export function useDisputeForm(): UseDisputeFormReturn {
       evidenceFiles: [],
     },
   });
+
+  const {
+    register,
+    handleSubmit,
+    formState,
+    watch,
+    setValue,
+    reset,
+  } = form;
 
   const submitDispute = useCallback(
     async (

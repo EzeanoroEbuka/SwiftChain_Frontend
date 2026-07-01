@@ -51,7 +51,7 @@ export function useProofUpload({
   const [isCompressing, setIsCompressing] = useState(false);
   const [uploadedProofs, setUploadedProofs] = useState<UploadedProof[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
-  const { toast } = useToast();
+  const { error: toastError, success: toastSuccess, loading: toastLoading, info: toastInfo } = useToast();
 
   const handleFileCapture = useCallback(
     async (file: File) => {
@@ -59,11 +59,7 @@ export function useProofUpload({
       if (!file.type.startsWith('image/')) {
         const errorMsg = 'Please select an image file';
         setErrors((prev) => [...prev, errorMsg]);
-        toast({
-          title: 'Invalid File',
-          description: errorMsg,
-          variant: 'destructive',
-        });
+        toastError(errorMsg);
         return;
       }
 
