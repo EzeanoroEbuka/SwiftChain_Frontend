@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { DriverReputation } from './DriverReputation';
 import { useFleet } from '@/hooks/useFleet';
 import type { Driver, DriverStatus } from '@/types/fleet';
 
@@ -73,7 +74,7 @@ function VirtualRow({ driver, style }: VirtualRowProps) {
       </div>
       <div className="text-right text-gray-700">{driver.activeDeliveries}</div>
       <div className="text-right text-gray-700">{driver.completedDeliveries}</div>
-      <div className="text-right text-gray-700">★ {driver.rating.toFixed(1)}</div>
+      <DriverReputation driverId={driver.id} standardRating={driver.rating} />
     </div>
   );
 }
