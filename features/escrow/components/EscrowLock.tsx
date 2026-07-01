@@ -28,12 +28,7 @@ export function EscrowLock({
   const [state, setState] = useState<LockState>('idle');
   const { isLoading, error, escrowId, transactionHash, lockEscrow, reset } =
     useEscrowLock();
-  const {
-    error: toastError,
-    success: toastSuccess,
-    loading: toastLoading,
-    info: toastInfo,
-  } = useToast();
+  const { toast } = useToast();
 
   const isWalletConnected = !!walletAddress;
   const formattedAmount = amount.toFixed(2);

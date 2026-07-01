@@ -14,6 +14,7 @@ export interface UseToastReturn {
   error: (message: string, description?: string, duration?: number) => void;
   info: (message: string, description?: string, duration?: number) => void;
   loading: (message: string, description?: string) => void;
+  toast: (config: ToastConfig) => void;
   isLoading: boolean;
   notifications: ToastMessage[];
   fetchNotifications: () => Promise<void>;
@@ -34,10 +35,10 @@ export function useToast(): UseToastReturn {
     try {
       setIsLoading(true);
       const response = await toastService.fetchToastMessages();
-      
+
       if (response.success && response.data) {
         setNotifications(response.data);
-        
+
         // Auto-show urgent notifications
         response.data.forEach((notif) => {
           if (notif.variant === 'error' || notif.variant === 'loading') {
@@ -98,18 +99,36 @@ export function useToast(): UseToastReturn {
   /**
    * Show loading notification
    */
-  const showLoading = useCallback(
-    (message: string, description?: string) => {
-      toastService.loading(message, description);
-    },
-    []
-  );
+  const showLoading = useCallback((message: string, description?: string) => {
+    toastService.loading(message, description);
+  }, []);
+
+  const showToast = useCallback((config: ToastConfig) => {
+    const { title, description, variant = 'default', duration } = config;
+    switch (variant) {
+      case 'destructive':
+      case 'error':
+        toastService.error(title, description, duration);
+        break;
+      case 'loading':
+        toastService.loading(title, description);
+        break;
+      case 'success':
+        toastService.success(title, description, duration);
+        break;
+      case 'info':
+      default:
+        toastService.info(title, description, duration);
+        break;
+    }
+  }, []);
 
   return {
     success: showSuccess,
     error: showError,
     info: showInfo,
     loading: showLoading,
+    toast: showToast,
     isLoading,
     notifications,
     fetchNotifications,
