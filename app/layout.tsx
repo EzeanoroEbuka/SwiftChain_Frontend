@@ -8,6 +8,7 @@ import TopLoader from '@/components/ui/TopLoader';
 import CommandPalette from '@/components/ui/CommandPalette';
 import ToastProvider from '@/components/providers/ToastProvider';
 import ModalProvider from '@/components/providers/ModalProvider';
+import { themeService } from '@/services/themeService';
 
 export const metadata = {
   title: 'SwiftChain',
@@ -21,6 +22,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: themeService.getThemeScript() }}
+        />
+      </head>
       <body>
         <ModalProvider>
           <Providers>
