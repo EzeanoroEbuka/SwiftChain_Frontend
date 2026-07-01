@@ -62,9 +62,19 @@ export function DeliveryList() {
               key={del.id}
               className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200 dark:border-gray-700"
             >
-              <div className="flex-1 mb-4 md:mb-0">
+              <div className="flex-1 mb-4 md:mb-0 min-w-0">
                 <p className="font-semibold text-lg text-primary-dark dark:text-primary-light">{del.trackingNumber}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{del.origin} ➔ {del.destination}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 break-words">{del.origin} ➔ {del.destination}</p>
+                {del.landmark ? (
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                      Landmark
+                    </span>
+                    <p className="text-sm italic text-gray-600 dark:text-gray-300 break-words">
+                      {del.landmark}
+                    </p>
+                  </div>
+                ) : null}
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                   Created: {formatDate(del.createdAt)}
                 </p>
