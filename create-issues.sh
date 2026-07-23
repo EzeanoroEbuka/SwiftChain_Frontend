@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status.
+set -e
+set -o pipefail
+
 # Ensure the GitHub CLI is installed before running
 if ! command -v gh &> /dev/null; then
     echo "❌ GitHub CLI (gh) could not be found. Please install it and run 'gh auth login' first."

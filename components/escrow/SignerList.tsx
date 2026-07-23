@@ -18,17 +18,16 @@ export function SignerList({ signers, requiredSignatures }: SignerListProps) {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  if (signers.length === 0 && requiredSignatures > 0) {
+  if (signers.length === 0) {
+    if (requiredSignatures <= 0) {
+      return null; // Don't show the list if no signers are expected
+    }
     return (
       <div className="mt-4 flex flex-col items-center justify-center gap-2 border-t border-gray-100 py-6 text-center text-sm text-gray-500">
         <ListX className="h-8 w-8 text-gray-400" />
         <span>No signatures have been recorded yet.</span>
       </div>
     );
-  }
-
-  if (signers.length === 0) {
-    return null;
   }
 
   return (

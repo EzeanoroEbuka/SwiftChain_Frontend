@@ -20,12 +20,12 @@ export function SignatureProgressBar({
   return (
     <div className="mt-4 space-y-2">
       <div className="flex justify-between text-sm">
-        <span className="font-medium text-gray-700">Signatures Received</span>
-        <span className={`font-medium ${isComplete ? 'text-green-600' : 'text-gray-500'}`}>
+        <span className="font-medium text-gray-700 dark:text-gray-300">Signatures Received</span>
+        <span className={`font-medium ${isComplete ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
           {current} of {required}
         </span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
+      <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
         <div
           className={`h-2 rounded-full transition-all duration-300 ${isComplete ? 'bg-green-500' : 'bg-blue-600'}`}
           style={{ width: `${percentage}%` }}

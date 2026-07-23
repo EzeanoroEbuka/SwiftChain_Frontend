@@ -9,7 +9,7 @@ interface ExpandableDeliveryRowProps {
   onToggle: (deliveryId: string) => void;
 }
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   PENDING: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
   ACCEPTED: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   IN_TRANSIT: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
@@ -17,11 +17,12 @@ const statusColors = {
   CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 };
 
-const escrowStatusColors = {
+const escrowStatusColors: Record<string, string> = {
   LOCKED: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
   RELEASED: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   REFUNDED: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   NOT_LOCKED: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+  DISPUTED: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
 };
 
 /**
@@ -83,12 +84,12 @@ export function ExpandableDeliveryRow({
                 {/* Status Badges - Mobile Stack, Desktop Row */}
                 <div className="flex flex-wrap gap-2 mt-2 md:mt-0 md:ml-4">
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusColors[delivery.status]}`}
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusColors[delivery.status] || 'bg-gray-100 text-gray-800'}`}
                   >
                     {delivery.status}
                   </span>
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${escrowStatusColors[delivery.escrowStatus]}`}
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${escrowStatusColors[delivery.escrowStatus] || 'bg-gray-100 text-gray-800'}`}
                   >
                     Escrow: {delivery.escrowStatus}
                   </span>

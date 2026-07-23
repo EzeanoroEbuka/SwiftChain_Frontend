@@ -13,7 +13,6 @@ interface DisputeFormProps {
   deliveryId: string;
   walletAddress: string;
   onSuccess?: (response: OpenDisputeResponse) => void;
-  onError?: (error: string) => void;
 }
 
 type FormStep = 'dispute_reason' | 'evidence' | 'confirmation' | 'success';
@@ -203,7 +202,6 @@ export default function DisputeForm({
   deliveryId,
   walletAddress,
   onSuccess,
-  onError,
 }: DisputeFormProps): ReactElement | null {
   const {
     register,
@@ -211,6 +209,7 @@ export default function DisputeForm({
     formState: { errors, isSubmitting },
     watch,
     setValue,
+    reset,
     submitDispute,
   } = useDisputeForm();
 
@@ -285,11 +284,11 @@ export default function DisputeForm({
       (response) => {
         setSuccessData(response);
         setCurrentStep('success');
-        onSuccess?.(response);
+        if (onSuccess) onSuccess(response);
       },
       (error) => {
         setCurrentStep('evidence');
-        onError?.(error);
+        toast.error(error || 'An unknown error occurred while submitting the dispute.');
       }
     );
   };
@@ -336,7 +335,7 @@ export default function DisputeForm({
           </div>
 
           {/* Dispute Reason */}
-          <div>
+          <div role="group" aria-labelledby="dispute-reason-label">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Dispute Reason <span className="text-red-500">*</span>
             </label>
@@ -354,6 +353,7 @@ export default function DisputeForm({
                     type="radio"
                     value={reason.value}
                     {...register('reason')}
+                    id={`reason-${reason.value}`}
                     className="w-4 h-4 text-blue-600"
                   />
                   <div className="ml-3">
@@ -407,9 +407,7 @@ export default function DisputeForm({
           <div className="flex gap-3 pt-6">
             <button
               type="button"
-              onClick={() => {
-                // Reset form
-              }}
+              onClick={() => reset()}
               className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition"
             >
               Cancel

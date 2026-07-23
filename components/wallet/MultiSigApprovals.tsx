@@ -218,7 +218,8 @@ const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => (
 );
 
 interface MultiSigApprovalsProps {
-  onSignSuccess?: () => void;
+  // Fix applied here: Allow onSignSuccess to accept an operationId parameter
+  onSignSuccess?: (operationId: string) => void;
 }
 
 const MultiSigApprovals: React.FC<MultiSigApprovalsProps> = ({ onSignSuccess }) => {

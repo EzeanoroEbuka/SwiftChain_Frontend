@@ -45,26 +45,32 @@ export function Tooltip({
   const show = () => setVisible(true);
   const hide = () => setVisible(false);
 
+  // Cast children to a typed element first so TypeScript knows what props exist
+  const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
+
   // Clone the child so we can inject the aria-describedby and event handlers
-  const trigger = React.cloneElement(children, {
-    'aria-describedby': tooltipId,
-    onMouseEnter: (e: React.MouseEvent) => {
-      show();
-      children.props.onMouseEnter?.(e);
-    },
-    onMouseLeave: (e: React.MouseEvent) => {
-      hide();
-      children.props.onMouseLeave?.(e);
-    },
-    onFocus: (e: React.FocusEvent) => {
-      show();
-      children.props.onFocus?.(e);
-    },
-    onBlur: (e: React.FocusEvent) => {
-      hide();
-      children.props.onBlur?.(e);
-    },
-  });
+  const trigger = React.cloneElement(
+    child,
+    {
+      'aria-describedby': tooltipId,
+      onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+        show();
+        child.props.onMouseEnter?.(e);
+      },
+      onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
+        hide();
+        child.props.onMouseLeave?.(e);
+      },
+      onFocus: (e: React.FocusEvent<HTMLElement>) => {
+        show();
+        child.props.onFocus?.(e);
+      },
+      onBlur: (e: React.FocusEvent<HTMLElement>) => {
+        hide();
+        child.props.onBlur?.(e);
+      },
+    }
+  );
 
   return (
     <span className="relative inline-flex items-center">
@@ -89,3 +95,4 @@ export function Tooltip({
     </span>
   );
 }
+
