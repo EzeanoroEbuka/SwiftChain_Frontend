@@ -2,6 +2,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { LANGUAGE_LABELS, type Locale } from '@/contexts/LanguageContext';
 import { AccordionSection } from './AccordionSection';
+import { FaqPageShell } from './FaqPageShell';
 import { useFaq } from '@/hooks/useFaq';
 
 const LOCALES = Object.keys(LANGUAGE_LABELS) as Locale[];
@@ -17,63 +18,52 @@ export function FaqHelpCenter() {
   const { categories, isLoading, isError } = useFaq(locale);
 
   return (
-    <div>
-      {/* Language selector */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-        <label
-          htmlFor="language-select"
-          style={{ marginRight: '0.5rem', fontWeight: 600, color: '#374151', alignSelf: 'center' }}
-        >
-          Language:
-        </label>
-        <select
-          id="language-select"
-          value={locale}
-          onChange={(e) => setLocale(e.target.value as Locale)}
-          style={{
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            padding: '0.375rem 0.75rem',
-            fontSize: '0.875rem',
-            color: '#111827',
-            backgroundColor: '#fff',
-            cursor: 'pointer',
-          }}
-        >
-          {LOCALES.map((l) => (
-            <option key={l} value={l}>
-              {LANGUAGE_LABELS[l]}
-            </option>
-          ))}
-        </select>
+    <FaqPageShell>
+      <div className="flex justify-end">
+        <div className="flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/70 px-3 py-2 text-sm text-slate-300">
+          <label htmlFor="language-select" className="font-medium text-slate-200">
+            Language:
+          </label>
+          <select
+            id="language-select"
+            value={locale}
+            onChange={(e) => setLocale(e.target.value as Locale)}
+            className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm font-medium text-slate-100 outline-none ring-0"
+          >
+            {LOCALES.map((l) => (
+              <option key={l} value={l}>
+                {LANGUAGE_LABELS[l]}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* States */}
       {isLoading && (
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 text-center text-slate-300">
           Loading help articles…
         </div>
       )}
 
       {isError && (
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#ef4444' }}>
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-8 text-center text-rose-300">
           Failed to load FAQ. Please try again later.
         </div>
       )}
 
       {!isLoading && !isError && categories.length === 0 && (
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 text-center text-slate-300">
           No FAQ articles available.
         </div>
       )}
 
       {!isLoading && !isError && categories.length > 0 && (
-        <div>
+        <div className="space-y-6">
           {categories.map((category) => (
             <AccordionSection key={category.id} category={category} />
           ))}
         </div>
       )}
-    </div>
+    </FaqPageShell>
   );
 }
