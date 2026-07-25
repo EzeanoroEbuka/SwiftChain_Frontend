@@ -1,8 +1,13 @@
-import { DeliveryList } from '@/components/DeliveryList';
+import { WorkflowCards } from '@/components/deliveries/WorkflowCards';
 
 export default function Home() {
   return (
     <main className="flex flex-col min-h-screen">
+      <section className="bg-white px-6 py-8">
+        <div className="mx-auto max-w-6xl">
+          <WorkflowCards />
+        </div>
+      </section>
       <section className="relative bg-gradient-to-b from-black via-gray-900 to-black text-white py-32 px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-8">
           <p className="uppercase tracking-widest text-blue-400 text-sm">
