@@ -1,41 +1,10 @@
 import { DeliveryList } from '@/components/DeliveryList';
+import { HeroSection } from '@/components/landing/HeroSection';
 
 export default function Home() {
   return (
     <main className="flex flex-col min-h-screen">
-      <section className="relative bg-gradient-to-b from-black via-gray-900 to-black text-white py-32 px-6 text-center">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <p className="uppercase tracking-widest text-blue-400 text-sm">
-            Logistics Reimagined
-          </p>
-
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-            Deliver Anything.
-            <br />
-            <span className="text-blue-500">Pay Only When It Arrives.</span>
-          </h1>
-
-          <p className="text-lg md:text-xl opacity-80 max-w-2xl mx-auto">
-            SwiftChain protects your deliveries using blockchain escrow. Funds
-            stay locked until delivery is completed — eliminating fraud,
-            disputes, and payment risks.
-          </p>
-
-          <div className="flex justify-center gap-4 flex-wrap">
-            <button className="bg-blue-600 hover:bg-blue-700 hover:scale-[1.03] active:scale-95 transition px-8 py-4 rounded-lg font-semibold text-lg shadow-lg">
-              Start Shipping Securely →
-            </button>
-
-            <button className="border border-gray-600 hover:border-white hover:bg-white/10 transition px-8 py-4 rounded-lg font-semibold">
-              See How It Works
-            </button>
-          </div>
-
-          <p className="text-sm opacity-60 pt-4">
-            Secure escrow • Instant settlement • Transparent logistics
-          </p>
-        </div>
-      </section>
+      <HeroSection />
 
       <section className="py-24 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
