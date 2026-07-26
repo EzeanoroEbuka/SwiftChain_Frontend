@@ -10,7 +10,11 @@ const config: Config = {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
-        tsconfig: '<rootDir>/tsconfig.jest.json',
+        tsconfig: {
+          jsx: 'react-jsx',
+          moduleResolution: 'node',
+          ignoreDeprecations: '5.0',
+        },
       },
     ],
   },

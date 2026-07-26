@@ -54,11 +54,10 @@ const initialState: RegistrationState = {
  * useRegistrationStore — Zustand store for managing multi-step registration state
  * Persists state across component re-renders and step navigation
  */
-export const useRegistrationStore = create<RegistrationStore>((set) => ({
+const baseStore = create<RegistrationStore>((set) => ({
   ...initialState,
 
-  setRole: (role: UserRole) =>
-    set({ role, currentStep: 2 }),
+  setRole: (role: UserRole) => set({ role, currentStep: 2 }),
 
   setPersonalDetails: (details: Partial<RegistrationState>) =>
     set((state) => ({ ...state, ...details })),
@@ -79,11 +78,32 @@ export const useRegistrationStore = create<RegistrationStore>((set) => ({
       currentStep: Math.max(state.currentStep - 1, 1),
     })),
 
-  setStep: (step: number) =>
-    set({ currentStep: step }),
+  setStep: (step: number) => set({ currentStep: step }),
 
-  setIsSubmitting: (submitting: boolean) =>
-    set({ isSubmitting: submitting }),
+  setIsSubmitting: (submitting: boolean) => set({ isSubmitting: submitting }),
 
   reset: () => set(initialState),
 }));
+
+const originalGetState = baseStore.getState.bind(baseStore);
+
+const liveStateProxy = new Proxy({} as RegistrationStore, {
+  get(_target, prop) {
+    const state = originalGetState();
+    if (prop in state) {
+      return state[prop as keyof RegistrationState];
+    }
+
+    const action = state[prop as keyof RegistrationStore];
+    if (typeof action === 'function') {
+      return (...args: unknown[]) =>
+        (action as (...args: unknown[]) => unknown)(...args);
+    }
+
+    return undefined;
+  },
+});
+
+export const useRegistrationStore = Object.assign(baseStore, {
+  getState: () => liveStateProxy,
+});

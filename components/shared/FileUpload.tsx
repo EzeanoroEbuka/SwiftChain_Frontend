@@ -1,7 +1,14 @@
 'use client';
 
 import { useFileUpload } from '@/hooks/useFileUpload';
-import { Upload, X, CheckCircle2, AlertCircle, File, Image } from 'lucide-react';
+import {
+  Upload,
+  X,
+  CheckCircle2,
+  AlertCircle,
+  File,
+  Image,
+} from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 interface FileUploadProps {
@@ -35,8 +42,15 @@ export function FileUpload({
   title = 'Upload Documents',
   description = 'Drag and drop your files here or click to browse',
 }: FileUploadProps) {
-  const { files, isUploading, validationErrors, addFiles, removeFile, uploadAll, clearAll } =
-    useFileUpload();
+  const {
+    files,
+    isUploading,
+    validationErrors,
+    addFiles,
+    removeFile,
+    uploadAll,
+    clearAll,
+  } = useFileUpload();
 
   const [isDragging, setIsDragging] = useState(false);
 
@@ -78,7 +92,11 @@ export function FileUpload({
   );
 
   const handleUpload = async () => {
-    const fileIds = await uploadAll(fileType);
+    await uploadAll(fileType);
+    const fileIds = files
+      .filter((file) => file.uploadStatus === 'success' && file.fileId)
+      .map((file) => file.fileId as string);
+
     if (onUploadComplete && fileIds.length > 0) {
       onUploadComplete(fileIds);
     }
@@ -97,8 +115,12 @@ export function FileUpload({
     <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{description}</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          {title}
+        </h3>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          {description}
+        </p>
       </div>
 
       {/* Validation Errors */}
@@ -109,7 +131,10 @@ export function FileUpload({
             <div className="flex-1">
               {validationErrors.map((error, idx) => (
                 <p key={idx} className="text-sm text-red-700 dark:text-red-300">
-                  <span className="font-semibold">{error.field.toUpperCase()}:</span> {error.message}
+                  <span className="font-semibold">
+                    {error.field.toUpperCase()}:
+                  </span>{' '}
+                  {error.message}
                 </p>
               ))}
             </div>
@@ -159,7 +184,9 @@ export function FileUpload({
                     : 'text-gray-900 dark:text-gray-100'
                 }`}
               >
-                {isDragging ? 'Drop your files here' : 'Click to upload or drag and drop'}
+                {isDragging
+                  ? 'Drop your files here'
+                  : 'Click to upload or drag and drop'}
               </p>
               <p className="text-xs text-gray-600 dark:text-gray-400">
                 JPEG, PNG, or PDF up to 5MB
@@ -226,7 +253,8 @@ export function FileUpload({
 
                 {file.uploadStatus === 'error' && (
                   <p className="mt-1 flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
-                    <AlertCircle className="h-3 w-3" /> {file.error || 'Upload failed'}
+                    <AlertCircle className="h-3 w-3" />{' '}
+                    {file.error || 'Upload failed'}
                   </p>
                 )}
               </div>
@@ -278,8 +306,8 @@ export function FileUpload({
             <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400" />
             <div>
               <p className="text-sm font-medium text-green-800 dark:text-green-300">
-                {successFiles.length} file{successFiles.length !== 1 ? 's' : ''} uploaded
-                successfully!
+                {successFiles.length} file{successFiles.length !== 1 ? 's' : ''}{' '}
+                uploaded successfully!
               </p>
             </div>
           </div>
@@ -288,7 +316,9 @@ export function FileUpload({
 
       {/* Constraints */}
       <div className="space-y-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-800/50">
-        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Constraints:</p>
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+          Constraints:
+        </p>
         <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
           <li>• Maximum file size: 5MB</li>
           <li>• Allowed formats: JPEG, PNG, PDF</li>

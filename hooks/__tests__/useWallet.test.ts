@@ -3,6 +3,12 @@ import { useWallet } from '@/hooks/useWallet';
 import { useWalletStore, WALLET_STORAGE_KEY } from '@/store/walletStore';
 import { walletService } from '@/services/walletService';
 import { freighterService } from '@/services/freighterService';
+import { sessionService } from '@/services/sessionService';
+import {
+  mockWalletConnectResponse,
+  mockWalletConnectFailureResponse,
+  mockWalletDisconnectResponse,
+} from './fixtures/walletApiResponses';
 
 const mockPush = jest.fn();
 
@@ -12,14 +18,10 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('@/services/walletService', () => ({
   walletService: {
-    connect: jest.fn().mockResolvedValue({
-      success: true,
-      message: 'Connected',
-      publicKey: 'GABC123DEF456STELLAR',
-    }),
+    connect: jest.fn().mockResolvedValue(mockWalletConnectResponse),
     disconnect: jest
       .fn()
-      .mockResolvedValue({ success: true, message: 'Disconnected' }),
+      .mockResolvedValue(mockWalletDisconnectResponse),
   },
 }));
 
@@ -83,11 +85,9 @@ describe('useWallet — connect flow', () => {
   });
 
   it('sets connectError when walletService.connect returns success: false', async () => {
-    (walletService.connect as jest.Mock).mockResolvedValueOnce({
-      success: false,
-      message: 'Invalid public key',
-      publicKey: '',
-    });
+    (walletService.connect as jest.Mock).mockResolvedValueOnce(
+      mockWalletConnectFailureResponse
+    );
     const { result } = renderHook(() => useWallet());
     await act(async () => {
       await result.current.connect();
@@ -155,10 +155,14 @@ describe('useWallet — disconnect flow', () => {
 
   it('calls walletService.disconnect once on disconnect', async () => {
     const { result } = renderHook(() => useWallet());
+    const clearSessionSpy = jest.spyOn(sessionService, 'clearWalletSession');
+
     await act(async () => {
       await result.current.disconnect();
     });
+
     expect(walletService.disconnect).toHaveBeenCalledTimes(1);
+    expect(clearSessionSpy).toHaveBeenCalledTimes(1);
   });
 
   it('clears address and isConnected from Zustand on disconnect', async () => {

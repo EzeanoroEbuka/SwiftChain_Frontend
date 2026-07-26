@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { DriverReputation } from './DriverReputation';
 import { useFleet } from '@/hooks/useFleet';
 import type { Driver, DriverStatus } from '@/types/fleet';
 
@@ -73,20 +74,132 @@ function VirtualRow({ driver, style }: VirtualRowProps) {
       </div>
       <div className="text-right text-gray-700">{driver.activeDeliveries}</div>
       <div className="text-right text-gray-700">{driver.completedDeliveries}</div>
-      <div className="text-right text-gray-700">★ {driver.rating.toFixed(1)}</div>
+      <DriverReputation driverId={driver.id} standardRating={driver.rating} />
+    </div>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <div
+      className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] items-center gap-4 border-b border-gray-100 px-4"
+      style={{ height: ROW_HEIGHT }}
+    >
+      {/* Driver */}
+      <div className="flex flex-col gap-1.5">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
+        <div className="h-3 w-1/2 animate-pulse rounded bg-gray-100" />
+      </div>
+      {/* Vehicle */}
+      <div className="flex flex-col gap-1.5">
+        <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+        <div className="h-3 w-3/4 animate-pulse rounded bg-gray-100" />
+      </div>
+      {/* Status */}
+      <div>
+        <div className="h-5 w-20 animate-pulse rounded-full bg-gray-200" />
+      </div>
+      {/* Active */}
+      <div className="flex justify-end">
+        <div className="h-4 w-6 animate-pulse rounded bg-gray-200" />
+      </div>
+      {/* Completed */}
+      <div className="flex justify-end">
+        <div className="h-4 w-6 animate-pulse rounded bg-gray-200" />
+      </div>
+      {/* Rating */}
+      <div className="flex justify-end">
+        <div className="h-4 w-10 animate-pulse rounded bg-gray-200" />
+      </div>
     </div>
   );
 }
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-2 p-4" aria-busy="true" aria-label="Loading fleet data">
+    <div aria-busy="true" aria-label="Loading fleet data">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div
-          key={i}
-          className="h-12 animate-pulse rounded-md bg-gray-100"
-        />
+        <TableRowSkeleton key={i} />
       ))}
+    </div>
+  );
+}
+
+function ErrorState({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) {
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-4 p-12 text-center"
+      role="alert"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-12 w-12 text-red-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+        />
+      </svg>
+      <div>
+        <h3 className="text-base font-semibold text-gray-800">
+          Failed to load fleet data
+        </h3>
+        <p className="mt-1 text-sm text-red-600">{message}</p>
+      </div>
+      <button
+        onClick={onRetry}
+        className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+
+function EmptyState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 p-12 text-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-12 w-12 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1}
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+        />
+      </svg>
+      <div>
+        <h3 className="text-base font-semibold text-gray-800">
+          No drivers found
+        </h3>
+        <p className="mt-1 text-sm text-gray-500">
+          Your fleet appears to be empty.
+        </p>
+      </div>
+      <button
+        onClick={onRetry}
+        className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+      >
+        Refresh data
+      </button>
     </div>
   );
 }
@@ -115,11 +228,24 @@ function SummaryBar({
       ].map(({ label, value, color }) => (
         <div
           key={label}
-          className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-center shadow-sm"
+          className="min-h-[4.625rem] rounded-lg border border-gray-200 bg-white px-4 py-3 text-center shadow-sm"
         >
           <p className={`text-2xl font-bold ${color}`}>{value}</p>
           <p className="mt-0.5 text-xs text-gray-500">{label}</p>
         </div>
+      ))}
+    </div>
+  );
+}
+
+function SummaryBarSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-[4.625rem] animate-pulse rounded-lg bg-gray-100"
+        />
       ))}
     </div>
   );
@@ -174,7 +300,9 @@ export function EnterpriseDashboard() {
       </div>
 
       {/* Summary bar — sourced from backend API via useFleet → fleetService */}
-      {summary && (
+      {isLoading ? (
+        <SummaryBarSkeleton />
+      ) : summary ? (
         <SummaryBar
           total={summary.totalDrivers}
           active={summary.activeDrivers}
@@ -182,7 +310,7 @@ export function EnterpriseDashboard() {
           idle={summary.idle}
           offline={summary.offline}
         />
-      )}
+      ) : null}
 
       {/* Table */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -193,13 +321,9 @@ export function EnterpriseDashboard() {
         {isLoading ? (
           <LoadingSkeleton />
         ) : error ? (
-          <div className="p-6 text-center text-sm text-red-600" role="alert">
-            {error}
-          </div>
+          <ErrorState message={error} onRetry={refetch} />
         ) : drivers.length === 0 ? (
-          <div className="p-6 text-center text-sm text-gray-500">
-            No drivers found in your fleet.
-          </div>
+          <EmptyState onRetry={refetch} />
         ) : (
           <div
             ref={scrollContainerRef}

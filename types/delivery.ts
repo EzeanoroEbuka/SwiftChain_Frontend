@@ -6,6 +6,8 @@ export interface DriverInfo {
   rating?: number;
 }
 
+import type { EscrowStatus } from './status';
+
 export interface Delivery {
   id: string;
   trackingNumber: string;

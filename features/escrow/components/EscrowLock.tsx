@@ -1,5 +1,6 @@
 'use client';
 
+import clsx from 'clsx';
 import React, { useState } from 'react';
 import { Lock, Check, AlertCircle, Loader } from 'lucide-react';
 import { useEscrowLock } from '@/hooks/useEscrowLock';
@@ -14,8 +15,6 @@ interface EscrowLockProps {
   onError?: (error: string) => void;
 }
 
-type LockState = 'idle' | 'pending' | 'success' | 'error';
-
 export function EscrowLock({
   deliveryId,
   amount,
@@ -25,8 +24,8 @@ export function EscrowLock({
   onError,
 }: EscrowLockProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [state, setState] = useState<LockState>('idle');
-  const { isLoading, error, escrowId, transactionHash, lockEscrow, reset } = useEscrowLock();
+  const { isLoading, isSuccess, error, escrowId, transactionHash, lockEscrow, reset } =
+    useEscrowLock();
   const { toast } = useToast();
 
   const isWalletConnected = !!walletAddress;
@@ -34,7 +33,6 @@ export function EscrowLock({
 
   const handleLockClick = () => {
     if (!isWalletConnected) {
-      setState('error');
       toast({
         title: 'Wallet Not Connected',
         description: 'Please connect your wallet to lock this payment.',
@@ -47,25 +45,23 @@ export function EscrowLock({
 
   const handleConfirm = async () => {
     setShowConfirmation(false);
-    setState('pending');
-    
+
     try {
-      await lockEscrow({
+      const { escrowId: newEscrowId, transactionHash: newTxHash } = await lockEscrow({
         deliveryId,
         amount,
         currency,
         walletAddress: walletAddress!,
       });
-      
-      setState('success');
+
       toast({
         title: 'Success!',
         description: `Escrow locked! Transaction: ${transactionHash?.slice(0, 10)}...`,
       });
-      onSuccess?.(escrowId!, transactionHash!);
+      onSuccess?.(newEscrowId, newTxHash);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to lock escrow';
-      setState('error');
+      const errorMsg =
+        err instanceof Error ? err.message : 'Failed to lock escrow';
       toast({
         title: 'Error',
         description: errorMsg,
@@ -80,12 +76,11 @@ export function EscrowLock({
   };
 
   const handleReset = () => {
-    setState('idle');
     reset();
   };
 
   // Render based on state
-  if (state === 'success') {
+  if (isSuccess) {
     return (
       <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         <div className="flex flex-col items-center text-center">
@@ -99,7 +94,9 @@ export function EscrowLock({
             Your escrow payment has been securely locked.
           </p>
           <div className="bg-gray-50 dark:bg-gray-700 rounded p-3 w-full mb-4">
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Transaction Hash</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+              Transaction Hash
+            </p>
             <p className="text-sm font-mono text-gray-900 dark:text-white break-all">
               {transactionHash}
             </p>
@@ -115,7 +112,7 @@ export function EscrowLock({
     );
   }
 
-  if (state === 'error') {
+  if (error) {
     return (
       <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         <div className="flex flex-col items-center text-center">
@@ -129,10 +126,7 @@ export function EscrowLock({
             {error || 'An unexpected error occurred. Please try again.'}
           </p>
           <button
-            onClick={() => {
-              setState('idle');
-              handleLockClick();
-            }}
+            onClick={handleReset}
             className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
           >
             Try Again
@@ -146,7 +140,9 @@ export function EscrowLock({
     <>
       <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         <div className="text-center mb-6">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Cost</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            Total Cost
+          </p>
           <p className="text-4xl font-bold text-gray-900 dark:text-white">
             {formattedAmount} {currency}
           </p>
@@ -175,13 +171,14 @@ export function EscrowLock({
         <button
           onClick={handleLockClick}
           disabled={isLoading || !isWalletConnected}
-          className={`w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors ${
-            isLoading
-              ? 'bg-blue-500 text-white cursor-wait'
-              : isWalletConnected
-              ? 'bg-primary text-white hover:bg-primary-dark'
-              : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
-          }`}
+          className={clsx(
+            'w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors',
+            {
+              'bg-blue-500 text-white cursor-wait': isLoading,
+              'bg-primary text-white hover:bg-primary-dark': isWalletConnected && !isLoading,
+              'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed': !isWalletConnected && !isLoading,
+            }
+          )}
         >
           {isLoading ? (
             <>
@@ -197,7 +194,9 @@ export function EscrowLock({
         </button>
 
         <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-          {isWalletConnected ? 'Wallet connected' : 'Wallet status: disconnected'}
+          {isWalletConnected
+            ? 'Wallet connected'
+            : 'Wallet status: disconnected'}
         </p>
       </div>
 

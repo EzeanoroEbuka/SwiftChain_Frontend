@@ -55,8 +55,8 @@ export const useBreadcrumbs = () => {
         // Check if the segment is likely an ID (GUID or Numeric)
         if (isGuid(segment) || (isNumeric(segment) && i > 0)) {
           const parentSegment = pathSegments[i - 1];
-          // Try to fetch a friendly name for this resource
-          label = await breadcrumbService.getResourceName(parentSegment, segment);
+          // Try to fetch a friendly name or mapped label for this resource
+          label = await breadcrumbService.getLabelForChild(parentSegment, segment);
         }
 
         breadcrumbList.push({

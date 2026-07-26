@@ -1,5 +1,5 @@
 .accordionItem {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 .trigger {
@@ -14,17 +14,18 @@
   text-align: left;
   font-size: 1rem;
   font-weight: 500;
-  color: #111827;
+  color: #f8fafc;
 }
 
 .trigger:hover {
-  color: #3b82f6;
+  color: #67e8f9;
 }
 
 .icon {
   flex-shrink: 0;
   margin-left: 1rem;
   transition: transform 0.3s ease;
+  color: #67e8f9;
 }
 
 .iconOpen {
@@ -44,7 +45,7 @@
 }
 
 .panelText {
-  color: #4b5563;
+  color: #cbd5e1;
   font-size: 0.95rem;
   line-height: 1.6;
 }

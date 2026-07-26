@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { networkService } from '@/services/networkService';
 
 /**
@@ -8,20 +8,43 @@ const useOffline = () => {
   const [isOnline, setIsOnline] = useState<boolean>(
     networkService.getIsOnline()
   );
+  const [showBackOnline, setShowBackOnline] = useState<boolean>(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsOnline(networkService.getIsOnline());
 
     const unsubscribe = networkService.subscribe((status) => {
-      setIsOnline(status);
+      if (status) {
+        setShowBackOnline(true);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+          setShowBackOnline(false);
+          setIsOnline(true);
+        }, 2000);
+      } else {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setShowBackOnline(false);
+        setIsOnline(false);
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   return {
     isOnline,
+    showBackOnline,
   };
 };
 

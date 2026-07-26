@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client';
 
+import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 import { useEscrowRelease, ReleaseStep } from '@/hooks/useEscrowRelease';
 import { useWalletStore } from '@/store/walletStore';
@@ -261,13 +262,14 @@ export function EscrowRelease({ escrowId, deliveryId }: EscrowReleaseProps) {
             </div>
             <div className="flex justify-between text-gray-600">
               <span>Status</span>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                escrowDetails.status === 'locked'
-                  ? 'bg-blue-100 text-blue-700'
-                  : escrowDetails.status === 'released'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
-              }`}>
+              <span className={clsx(
+                'rounded-full px-2 py-0.5 text-xs font-medium',
+                {
+                  'bg-blue-100 text-blue-700': escrowDetails.status === 'locked',
+                  'bg-green-100 text-green-700': escrowDetails.status === 'released',
+                  'bg-red-100 text-red-700': escrowDetails.status !== 'locked' && escrowDetails.status !== 'released',
+                }
+              )}>
                 {escrowDetails.status.charAt(0).toUpperCase() + escrowDetails.status.slice(1)}
               </span>
             </div>
@@ -301,13 +303,14 @@ export function EscrowRelease({ escrowId, deliveryId }: EscrowReleaseProps) {
           onClick={handleMainButtonClick}
           disabled={isActionDisabled}
           aria-busy={step === 'signing' || step === 'releasing'}
-          className={`w-full rounded-xl py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-            step === 'done'
-              ? 'bg-green-100 text-green-700 cursor-not-allowed'
-              : isActionDisabled
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 active:scale-[0.98]'
-          }`}
+          className={clsx(
+            'w-full rounded-xl py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2',
+            {
+              'bg-green-100 text-green-700 cursor-not-allowed': step === 'done',
+              'bg-gray-100 text-gray-400 cursor-not-allowed': isActionDisabled && step !== 'done',
+              'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 active:scale-[0.98]': !isActionDisabled && step !== 'done',
+            }
+          )}
         >
           {STEP_LABEL[step]}
         </button>
