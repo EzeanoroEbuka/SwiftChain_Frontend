@@ -1,4 +1,5 @@
 import { WorkflowCards } from '@/components/deliveries/WorkflowCards';
+import { KineticExplorer } from '@/components/landing/KineticExplorer';
 
 export default function Home() {
   return (
@@ -39,6 +40,10 @@ export default function Home() {
           <p className="text-sm opacity-60 pt-4">
             Secure escrow • Instant settlement • Transparent logistics
           </p>
+
+          <div className="pt-8">
+            <KineticExplorer />
+          </div>
         </div>
       </section>
 
