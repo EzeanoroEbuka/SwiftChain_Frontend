@@ -15,15 +15,14 @@
 
 import React, { useEffect } from 'react';
 import {
-  AlertTriangle,
   AlertCircle,
   TrendingDown,
   TrendingUp,
   Loader2,
-  CheckCircle2,
 } from 'lucide-react';
 import { useFiatXlmSlippage } from '@/hooks/useFiatXlmSlippage';
 import { formatNgn } from '@/services/fxService';
+import { SlippageWarning } from '@/components/escrow/SlippageWarning';
 
 export interface FiatXlmPreviewProps {
   /** The XLM amount being paid */
@@ -184,81 +183,21 @@ export function FiatXlmPreview({
         )}
       </div>
 
-      {/* Warning Section — volatile slippage (>2%) */}
-      {slippage.isVolatile && !slippage.requiresAcknowledgment && (
-        <div
-          role="alert"
-          className="mb-4 flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/20"
-        >
-          <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-500" aria-hidden="true" />
-          <div className="text-sm text-amber-800 dark:text-amber-200">
-            <p className="font-semibold">FX Rate Volatility Detected</p>
-            <p className="mt-1 text-xs">
-              The NGN/XLM rate has shifted{' '}
-              <span className="font-semibold">
-                {Math.abs(slippagePercent).toFixed(2)}%
-              </span>
-              {' '}since your quote. Please review the updated rate.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Critical Section — critical slippage (>5%) */}
-      {slippage.requiresAcknowledgment && (
-        <div
-          role="alert"
-          className="mb-4 flex gap-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20"
-        >
-          <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" aria-hidden="true" />
-          <div className="flex-1 text-sm text-red-800 dark:text-red-200">
-            <p className="font-semibold">⚠️ High FX Rate Volatility</p>
-            <p className="mt-1 text-xs">
-              The NGN/XLM rate has shifted more than{' '}
-              <span className="font-semibold">
-                {Math.abs(slippagePercent).toFixed(2)}%
-              </span>
-              . This is a significant change. You must acknowledge this volatility
-              before proceeding.
-            </p>
-
-            {/* Acknowledgment Checkbox */}
-            <div className="mt-3 flex items-start gap-2">
-              <input
-                id="volatility-ack"
-                type="checkbox"
-                checked={slippage.isAcknowledged}
-                onChange={(e) => slippage.setAcknowledged(e.target.checked)}
-                disabled={isSubmitting}
-                className="mt-1 h-4 w-4 cursor-pointer rounded border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Acknowledge FX rate volatility"
-              />
-              <label
-                htmlFor="volatility-ack"
-                className={`text-xs cursor-pointer select-none ${
-                  isSubmitting ? 'cursor-not-allowed opacity-50' : ''
-                }`}
-              >
-                I acknowledge the rate volatility and accept the current rate
-              </label>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* FX rate volatility warning — see SlippageWarning for the 2%/5% threshold UI */}
+      <SlippageWarning
+        slippagePercent={slippagePercent}
+        isVolatile={slippage.isVolatile}
+        requiresAcknowledgment={slippage.requiresAcknowledgment}
+        isAcknowledged={slippage.isAcknowledged}
+        onAcknowledgeChange={slippage.setAcknowledged}
+        isSubmitting={isSubmitting}
+      />
 
       {/* Loading State */}
       {slippage.isLoadingRate && (
         <div className="mb-4 flex items-center gap-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
           Checking current rates…
-        </div>
-      )}
-
-      {/* Success State */}
-      {slippage.isAcknowledged && slippage.requiresAcknowledgment && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
-          <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-          Volatility acknowledged. Ready to proceed.
         </div>
       )}
 
