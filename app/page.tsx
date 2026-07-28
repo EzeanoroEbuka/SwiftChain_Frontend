@@ -1,4 +1,5 @@
 import { WorkflowCards } from '@/components/deliveries/WorkflowCards';
+import { ValueProps } from '@/components/landing/ValueProps';
 
 export default function Home() {
   return (
@@ -42,45 +43,18 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 px-6 bg-white">
+      <section className="py-24 px-6 bg-gradient-to-b from-black via-gray-900 to-black">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-4">
+          <h2 className="text-4xl font-bold text-center mb-4 text-white">
             Why Businesses Choose SwiftChain
           </h2>
 
-          <p className="text-center text-gray-600 mb-14 max-w-2xl mx-auto">
+          <p className="text-center text-gray-400 mb-14 max-w-2xl mx-auto">
             Traditional logistics relies on trust. SwiftChain replaces trust
             with automated blockchain guarantees.
           </p>
 
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="bg-gray-50 p-8 rounded-2xl transition hover:-translate-y-2 hover:shadow-xl">
-              <div className="text-5xl mb-4">🔗</div>
-              <h3 className="text-xl font-semibold mb-3">Trustless Escrow</h3>
-              <p className="text-gray-600">
-                Payments remain secured until delivery confirmation. Zero fraud.
-                Zero uncertainty.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-8 rounded-2xl transition hover:-translate-y-2 hover:shadow-xl">
-              <div className="text-5xl mb-4">⚡</div>
-              <h3 className="text-xl font-semibold mb-3">Instant Settlement</h3>
-              <p className="text-gray-600">
-                Drivers receive payment instantly once deliveries are verified
-                on-chain.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-8 rounded-2xl transition hover:-translate-y-2 hover:shadow-xl">
-              <div className="text-5xl mb-4">💰</div>
-              <h3 className="text-xl font-semibold mb-3">Ultra-Low Fees</h3>
-              <p className="text-gray-600">
-                Reduce logistics costs with blockchain efficiency and minimal
-                transaction overhead.
-              </p>
-            </div>
-          </div>
+          <ValueProps />
         </div>
       </section>
 
