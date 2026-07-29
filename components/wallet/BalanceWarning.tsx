@@ -59,6 +59,7 @@ export const BalanceWarning: React.FC<BalanceWarningProps> = ({
   useEffect(() => {
     // If user dismissed, don't show
     if (dismissed) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState(prev => ({ ...prev, isVisible: false }));
       return;
     }
@@ -126,6 +127,7 @@ export const BalanceWarning: React.FC<BalanceWarningProps> = ({
   // If warning is visible but we later find balance is sufficient, hide it
   useEffect(() => {
     if (hasSufficientBalance && state.isVisible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState(prev => ({
         ...prev,
         isVisible: false,
