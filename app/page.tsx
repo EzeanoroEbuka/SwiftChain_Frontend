@@ -1,6 +1,7 @@
 import { WorkflowCards } from '@/components/deliveries/WorkflowCards';
 import { ValueProps } from '@/components/landing/ValueProps';
 import { CallToAction } from '@/components/landing/CallToAction';
+import { TrustBar } from '@/components/landing/TrustBar';
 
 export default function Home() {
   return (
@@ -41,8 +42,14 @@ export default function Home() {
           <p className="text-sm opacity-60 pt-4">
             Secure escrow • Instant settlement • Transparent logistics
           </p>
+
+          <div className="pt-8">
+            <KineticExplorer />
+          </div>
         </div>
       </section>
+
+      <TrustBar />
 
       <section className="py-24 px-6 bg-gradient-to-b from-black via-gray-900 to-black">
         <div className="max-w-6xl mx-auto">
@@ -211,11 +218,8 @@ export default function Home() {
             </ul>
           </div>
         </div>
+      </section>
 
-        <p className="text-center opacity-60 text-sm mt-12">
-          © {new Date().getFullYear()} SwiftChain. All rights reserved.
-        </p>
-      </footer>
     </main>
   );
 }
