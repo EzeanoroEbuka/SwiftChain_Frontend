@@ -7,12 +7,12 @@ import type { CtaResponse } from '@/types/cta';
 
 interface UseCallToActionReturn {
   email: string;
-  setEmail: (value: string) => void;
+  setEmail: (_value: string) => void;
   isSubmitting: boolean;
   error: string | null;
   success: CtaResponse | null;
   isValid: boolean;
-  onSubmit: (e: React.FormEvent) => Promise<void>;
+  onSubmit: (_e: React.FormEvent) => Promise<void>;
   resetForm: () => void;
 }
 
