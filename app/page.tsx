@@ -1,5 +1,6 @@
 import { WorkflowCards } from '@/components/deliveries/WorkflowCards';
 import { ValueProps } from '@/components/landing/ValueProps';
+import { CallToAction } from '@/components/landing/CallToAction';
 
 export default function Home() {
   return (
@@ -159,19 +160,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-blue-600 text-white py-24 text-center px-6">
-        <h2 className="text-4xl font-bold mb-6">
-          Stop Losing Money to Delivery Disputes
-        </h2>
-
-        <p className="opacity-90 mb-8 max-w-xl mx-auto">
-          Join the future of logistics where payments are secure, automated, and
-          guaranteed.
-        </p>
-
-        <button className="bg-white text-blue-600 px-10 py-4 rounded-lg font-bold text-lg hover:scale-105 active:scale-95 transition">
-          Launch Your First Delivery →
-        </button>
+      <section className="px-6 py-8">
+        <div className="mx-auto max-w-6xl">
+          <CallToAction />
+        </div>
       </section>
 
       <footer className="bg-black text-white px-6 py-14">
