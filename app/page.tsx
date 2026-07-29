@@ -218,7 +218,7 @@ export default function Home() {
             </ul>
           </div>
         </div>
-      </section>
+      </footer>
 
     </main>
   );
