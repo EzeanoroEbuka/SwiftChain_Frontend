@@ -12,8 +12,6 @@ const useOffline = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setIsOnline(networkService.getIsOnline());
-
     const unsubscribe = networkService.subscribe((status) => {
       if (status) {
         setShowBackOnline(true);
