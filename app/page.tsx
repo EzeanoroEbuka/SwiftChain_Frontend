@@ -2,6 +2,7 @@ import { WorkflowCards } from '@/components/deliveries/WorkflowCards';
 import { ValueProps } from '@/components/landing/ValueProps';
 import { CallToAction } from '@/components/landing/CallToAction';
 import { TrustBar } from '@/components/landing/TrustBar';
+import { PricingCards } from '@/components/pricing/PricingCards';
 
 export default function Home() {
   return (
@@ -173,6 +174,7 @@ export default function Home() {
         </div>
       </section>
 
+      <PricingCards />
     </main>
   );
 }
