@@ -15,3 +15,19 @@ export interface PricingComparison {
   plans: PricingPlan[];
   rows: PricingFeatureRow[];
 }
+
+export interface PricingCard {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  ctaLabel: string;
+  highlighted: boolean;
+  href: string;
+}
+
+export interface PricingCardsResponse {
+  cards: PricingCard[];
+}
