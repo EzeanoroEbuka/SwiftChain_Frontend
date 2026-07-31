@@ -174,7 +174,53 @@ export default function Home() {
         </div>
       </section>
 
-      <PricingCards />
+      <footer className="bg-black text-white px-6 py-14">
+        <div className="max-w-6xl mx-auto grid gap-10 md:grid-cols-3 ">
+          <div>
+            <h3 className="font-bold text-xl">SwiftChain</h3>
+            <p className="opacity-70 mt-3">
+              Blockchain-powered logistics with secure escrow payments.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Platform</h4>
+            <ul className="space-y-2 opacity-80">
+              <li className="hover:text-blue-400 cursor-default transition">
+                Deliveries
+              </li>
+              <li className="hover:text-blue-400 cursor-default transition">
+                Drivers
+              </li>
+              <li className="hover:text-blue-400 cursor-default transition">
+                Escrow
+              </li>
+              <li className="hover:text-blue-400 cursor-default transition">
+                Pricing
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Company</h4>
+            <ul className="space-y-2 opacity-80">
+              <li className="hover:text-blue-400 cursor-default transition">
+                About
+              </li>
+              <li className="hover:text-blue-400 cursor-default transition">
+                Docs
+              </li>
+              <li className="hover:text-blue-400 cursor-default transition">
+                Contact
+              </li>
+              <li className="hover:text-blue-400 cursor-default transition">
+                Privacy
+              </li>
+            </ul>
+          </div>
+        </div>
+      </footer>
+
     </main>
   );
 }
