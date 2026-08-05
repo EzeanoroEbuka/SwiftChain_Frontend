@@ -28,8 +28,13 @@ const createWrapper = () => {
       queries: { retry: false, gcTime: 0 },
     },
   });
-  return ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children
+    );
+  };
 };
 
 describe('FeeEstimator Component', () => {
@@ -199,9 +204,7 @@ describe('FeeEstimator Component', () => {
 
       render(<FeeEstimator amount={100} />, { wrapper: createWrapper() });
 
-      expect(
-        screen.getByText(/Transaction Breakdown/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Transaction Breakdown/i)).toBeInTheDocument();
     });
 
     it('should display transaction amount', () => {
@@ -505,7 +508,9 @@ describe('FeeEstimator Component', () => {
           { wrapper: createWrapper() }
         );
 
-        expect(screen.getByText(new RegExp(`100\\.00 ${currency}`))).toBeInTheDocument();
+        expect(
+          screen.getByText(new RegExp(`100\\.00 ${currency}`))
+        ).toBeInTheDocument();
         unmount();
       }
     });
@@ -556,7 +561,9 @@ describe('FeeEstimator Component', () => {
       render(<FeeEstimator amount={100} />, { wrapper: createWrapper() });
 
       expect(
-        screen.getByText(/Fees are estimated based on current network conditions/i)
+        screen.getByText(
+          /Fees are estimated based on current network conditions/i
+        )
       ).toBeInTheDocument();
     });
   });
@@ -664,9 +671,7 @@ describe('FeeEstimator Component', () => {
 
       render(<FeeEstimator amount={100} />, { wrapper: createWrapper() });
 
-      expect(
-        screen.getByText(/Transaction Breakdown/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Transaction Breakdown/i)).toBeInTheDocument();
     });
 
     it('should render at desktop viewport', () => {
@@ -684,9 +689,7 @@ describe('FeeEstimator Component', () => {
 
       render(<FeeEstimator amount={100} />, { wrapper: createWrapper() });
 
-      expect(
-        screen.getByText(/Transaction Breakdown/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Transaction Breakdown/i)).toBeInTheDocument();
     });
   });
 
@@ -712,9 +715,7 @@ describe('FeeEstimator Component', () => {
 
       render(<FeeEstimator amount={0.5} />, { wrapper: createWrapper() });
 
-      expect(
-        screen.getByText(/Transaction Breakdown/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Transaction Breakdown/i)).toBeInTheDocument();
     });
 
     it('should handle very large amounts', () => {
@@ -738,9 +739,7 @@ describe('FeeEstimator Component', () => {
 
       render(<FeeEstimator amount={100000000} />, { wrapper: createWrapper() });
 
-      expect(
-        screen.getByText(/Transaction Breakdown/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Transaction Breakdown/i)).toBeInTheDocument();
     });
   });
 });

@@ -1,0 +1,14 @@
+// Header Navbar Section
+https://www.figma.com/design/2kP82C0Z8z0X3CncLQmfhB/Stellar-Project-Fig?node-id=227-2&p=f&t=j0tZfGASSvOL8oxc-0
+
+
+// login Page 
+https://www.figma.com/design/2kP82C0Z8z0X3CncLQmfhB/Stellar-Project-Fig?node-id=227-2&p=f&t=j0tZfGASSvOL8oxc-0
+
+
+// Register Page
+https://www.figma.com/design/2kP82C0Z8z0X3CncLQmfhB/Stellar-Project-Fig?node-id=227-2&p=f&t=j0tZfGASSvOL8oxc-0
+
+
+//Footer Component 
+https://www.figma.com/design/2kP82C0Z8z0X3CncLQmfhB/Stellar-Project-Fig?node-id=227-2&p=f&t=j0tZfGASSvOL8oxc-0

@@ -13,6 +13,7 @@ const config: Config = {
         tsconfig: {
           jsx: 'react-jsx',
           moduleResolution: 'node',
+          ignoreDeprecations: '5.0',
         },
       },
     ],

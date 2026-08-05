@@ -27,6 +27,7 @@ export default function ModalProvider({
    * Subscribe to modal state changes on mount
    */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
 
     // Subscribe to modal events

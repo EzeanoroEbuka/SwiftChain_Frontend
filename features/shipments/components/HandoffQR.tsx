@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import QRCode from 'qrcode.react';
-import { useHandoffQR, useGenerateHandoffQR } from '../../../hooks/useHandoffQR';
+import { QRCodeCanvas } from 'qrcode.react';
+import {
+  useHandoffQR,
+  useGenerateHandoffQR,
+} from '../../../hooks/useHandoffQR';
 import { HandoffQRData } from '../../../types/shipment';
 import clsx from 'clsx';
 
@@ -48,6 +51,7 @@ export function HandoffQR({
   // Auto-generate QR on first load if requested
   useEffect(() => {
     if (autoGenerate && !hasTriedGenerate && deliveryId && driverId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasTriedGenerate(true);
       generateMutation.mutate(deliveryId);
     }
@@ -94,7 +98,9 @@ export function HandoffQR({
           className="animate-pulse bg-gray-200 rounded"
           style={{ width: size, height: size }}
         />
-        {includeLabel && <p className="text-sm text-gray-500">Generating QR code...</p>}
+        {includeLabel && (
+          <p className="text-sm text-gray-500">Generating QR code...</p>
+        )}
       </div>
     );
   }
@@ -103,7 +109,12 @@ export function HandoffQR({
   if (qrQuery.isError || generateMutation.isError) {
     const error = qrQuery.error || generateMutation.error;
     return (
-      <div className={clsx('flex flex-col items-center gap-3 p-4 rounded-lg bg-red-50', className)}>
+      <div
+        className={clsx(
+          'flex flex-col items-center gap-3 p-4 rounded-lg bg-red-50',
+          className
+        )}
+      >
         <div className="text-red-600">
           <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -114,7 +125,9 @@ export function HandoffQR({
           </svg>
         </div>
         <div className="text-center">
-          <p className="text-sm font-medium text-red-900">Failed to generate QR code</p>
+          <p className="text-sm font-medium text-red-900">
+            Failed to generate QR code
+          </p>
           <p className="text-xs text-red-700 mt-1">
             {error instanceof Error ? error.message : 'Unknown error occurred'}
           </p>
@@ -140,7 +153,9 @@ export function HandoffQR({
     return (
       <div className={clsx('flex flex-col items-center gap-4', className)}>
         <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-200 border-dashed">
-          <p className="text-sm text-gray-600 text-center">No QR code available</p>
+          <p className="text-sm text-gray-600 text-center">
+            No QR code available
+          </p>
         </div>
         {!autoGenerate && (
           <button
@@ -160,12 +175,11 @@ export function HandoffQR({
       {/* QR Code Container */}
       <div className="p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm hover:shadow-md transition-shadow">
         <div className="bg-white p-2 rounded">
-          <QRCode
+          <QRCodeCanvas
             value={qrQuery.data.qrData}
             size={size}
             level="H"
             includeMargin={true}
-            renderAs="canvas"
             data-testid="handoff-qr-code"
           />
         </div>
@@ -174,13 +188,26 @@ export function HandoffQR({
       {/* QR Information */}
       {includeLabel && (
         <div className="text-center">
-          <p className="text-sm font-medium text-gray-900">Package Handoff QR</p>
-          <p className="text-xs text-gray-600 mt-1">Delivery ID: {deliveryId}</p>
+          <p className="text-sm font-medium text-gray-900">
+            Package Handoff QR
+          </p>
+          <p className="text-xs text-gray-600 mt-1">
+            Delivery ID: {deliveryId}
+          </p>
           <p
             className={clsx('text-xs font-medium mt-2 transition-colors', {
-              'text-red-600': (new Date(qrQuery.data.expiresAt).getTime() - new Date().getTime()) < 60000,
-              'text-amber-600': (new Date(qrQuery.data.expiresAt).getTime() - new Date().getTime()) < 300000,
-              'text-green-600': (new Date(qrQuery.data.expiresAt).getTime() - new Date().getTime()) >= 300000,
+              'text-red-600':
+                new Date(qrQuery.data.expiresAt).getTime() -
+                  new Date().getTime() <
+                60000,
+              'text-amber-600':
+                new Date(qrQuery.data.expiresAt).getTime() -
+                  new Date().getTime() <
+                300000,
+              'text-green-600':
+                new Date(qrQuery.data.expiresAt).getTime() -
+                  new Date().getTime() >=
+                300000,
             })}
           >
             Expires in: {getTimeRemaining()}

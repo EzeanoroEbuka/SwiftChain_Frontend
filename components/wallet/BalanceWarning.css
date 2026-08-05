@@ -1,0 +1,167 @@
+.balance-warning-container {
+  width: 100%;
+  position: relative;
+}
+
+.balance-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  animation: slideDown 0.3s ease forwards;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
+
+.balance-warning--danger {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.balance-warning--warning {
+  background: #fff3cd;
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.balance-warning--entering {
+  animation: slideDown 0.3s ease forwards;
+}
+
+.balance-warning__icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.balance-warning__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.balance-warning__title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.balance-warning__message {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.balance-warning__details {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.balance-warning__details span {
+  display: inline-block;
+}
+
+.balance-warning__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: flex-start;
+}
+
+.balance-warning__btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.balance-warning__btn--retry {
+  background: rgba(255, 255, 255, 0.7);
+  color: inherit;
+}
+
+.balance-warning__btn--retry:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.balance-warning__btn--close {
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px 8px;
+  opacity: 0.6;
+}
+
+.balance-warning__btn--close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.balance-warning__spacer {
+  height: 60px; /* Match the approximate height of the warning */
+  visibility: hidden;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .balance-warning {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+  }
+
+  .balance-warning__actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  .balance-warning__details {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .balance-warning--warning {
+    background: #2d2a1e;
+    border-color: #ffc107;
+    color: #ffd60a;
+  }
+
+  .balance-warning--danger {
+    background: #2d1e1e;
+    border-color: #dc3545;
+    color: #f8a5a5;
+  }
+
+  .balance-warning__btn--retry {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .balance-warning__btn--retry:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}

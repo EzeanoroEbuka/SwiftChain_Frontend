@@ -1,0 +1,9 @@
+DARK MODE UI/UX
+
+//Design Dark Mode: See Pickup and Destination
+https://www.figma.com/design/2kP82C0Z8z0X3CncLQmfhB/Stellar-Project-Fig?node-id=227-2&p=f&t=zOzuCCgfIl3q2L5F-0
+
+
+//Design Dark Mode: Access Blockchain-Verified Delivery Records Page
+https://www.figma.com/design/2kP82C0Z8z0X3CncLQmfhB/Stellar-Project-Fig?node-id=227-2&p=f&t=zOzuCCgfIl3q2L5F-0
+

@@ -29,7 +29,7 @@ The frontend application is the customer and administrator-facing interface allo
 
 - **Tech Stack**: Next.js App Router, TypeScript, TailwindCSS, React Hook Form, Zod, Axios, TanStack Query, Zustand, WebSocket client.
 - **Roles Supported**: Customer, Driver, and Admin.
-- **Prerequisites**: Node.js (v18 or higher) and your preferred package manager (npm, yarn, or pnpm).
+- **Prerequisites**: Node.js (v18 or higher) and pnpm (v9 or higher).
 
 ### Installation & Setup
 
@@ -85,6 +85,7 @@ When looking for something to work on, please check the GitHub Issues tab. We re
 ---
 
 ## License & Copyright
+
 
 By contributing, you agree that your contributions will be licensed under the **MIT License**, same as the project.
 

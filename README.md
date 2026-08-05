@@ -192,7 +192,7 @@ SwiftChain-Frontend/
 ### Prerequisites
 
 - Node.js (v18 or higher)
-- npm or yarn or pnpm
+- pnpm (v9 or higher)
 
 ### Installation
 

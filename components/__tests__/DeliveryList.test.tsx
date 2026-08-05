@@ -8,7 +8,16 @@ import { Delivery } from '@/types/delivery';
 // Mock the useDeliveries hook
 jest.mock('@/hooks/useDeliveries');
 
-const mockUseDeliveries = useDeliveries as jest.MockedFunction<typeof useDeliveries>;
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+const mockUseDeliveries = useDeliveries as jest.MockedFunction<
+  typeof useDeliveries
+>;
 
 const mockDeliveries: Delivery[] = [
   {
@@ -26,6 +35,7 @@ const mockDeliveries: Delivery[] = [
     status: 'IN_TRANSIT',
     origin: 'New York, NY',
     destination: 'Boston, MA',
+    landmark: 'Near the central market',
     escrowStatus: 'LOCKED',
     amount: 100,
     currency: 'USD',
@@ -53,9 +63,12 @@ const createWrapper = () => {
       queries: { retry: false },
     },
   });
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+  };
 };
 
 describe('DeliveryList', () => {
@@ -187,6 +200,30 @@ describe('DeliveryList', () => {
     });
   });
 
+  it('should render an optional landmark for deliveries', () => {
+    mockUseDeliveries.mockReturnValue({
+      data: mockDeliveries,
+      isLoading: false,
+      error: null,
+      isFetching: false,
+      status: 'success',
+      fetchStatus: 'idle',
+      refetch: jest.fn(),
+      isPending: false,
+      isPaused: false,
+      isError: false,
+      isSuccess: true,
+      dataUpdatedAt: Date.now(),
+      errorUpdatedAt: 0,
+      failureCount: 0,
+      failureReason: null,
+    } as any);
+
+    render(<DeliveryList />, { wrapper: createWrapper() });
+
+    expect(screen.getByText(/Near the central market/i)).toBeInTheDocument();
+  });
+
   it('should display correct header text', () => {
     mockUseDeliveries.mockReturnValue({
       data: mockDeliveries,
@@ -211,7 +248,7 @@ describe('DeliveryList', () => {
     expect(screen.getByText('Active Deliveries')).toBeInTheDocument();
   });
 
-  it('should render expandable rows for each delivery', () => {
+  it('should render status and escrow information for each delivery', () => {
     mockUseDeliveries.mockReturnValue({
       data: mockDeliveries,
       isLoading: false,
@@ -232,15 +269,12 @@ describe('DeliveryList', () => {
 
     render(<DeliveryList />, { wrapper: createWrapper() });
 
-    // Check for expandable buttons
-    const buttons = screen.getAllByRole('button', {
-      name: /Toggle details for delivery/,
-    });
-
-    expect(buttons).toHaveLength(mockDeliveries.length);
+    expect(screen.getByText('IN_TRANSIT', { selector: 'span' })).toBeInTheDocument();
+    expect(screen.getByText('PENDING', { selector: 'span' })).toBeInTheDocument();
+    expect(screen.getAllByText(/Escrow:/).length).toBeGreaterThan(0);
   });
 
-  it('should handle expanding individual delivery rows', () => {
+  it('should render core delivery metadata without extra interaction', () => {
     mockUseDeliveries.mockReturnValue({
       data: mockDeliveries,
       isLoading: false,
@@ -261,13 +295,7 @@ describe('DeliveryList', () => {
 
     render(<DeliveryList />, { wrapper: createWrapper() });
 
-    const buttons = screen.getAllByRole('button', {
-      name: /Toggle details for delivery/,
-    });
-
-    fireEvent.click(buttons[0]);
-
-    // After clicking, the first expandable row should show details
-    expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
+    expect(screen.getByText('New York, NY ➔ Boston, MA')).toBeInTheDocument();
+    expect(screen.getByText('Chicago, IL ➔ Detroit, MI')).toBeInTheDocument();
   });
 });

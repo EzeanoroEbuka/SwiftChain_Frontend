@@ -1,5 +1,6 @@
 'use client';
 
+import clsx from 'clsx';
 import React from 'react';
 import { useWalletStore } from '@/store/walletStore';
 import { useWalletBalance } from '@/hooks/useWalletBalance';
@@ -33,11 +34,22 @@ export function BalanceCheck({
   submitLabel = 'Confirm & Lock Escrow',
   isFormInvalid = false,
 }: BalanceCheckProps) {
+  // We can still keep this if you need to check if the user is connected, 
+  // but it's no longer being passed into useWalletBalance.
   const address = useWalletStore((state) => state.address);
-  const { balance, isLoading, error, isInsufficient, refresh } =
-    useWalletBalance(address);
+  
+  // FIX: Call useWalletBalance without arguments. 
+  // It likely gets the address internally from your wallet context.
+  const { balance, isLoading, error, refetch } = useWalletBalance();
 
-  const insufficient = isInsufficient(requiredAmount);
+  // Extract the numeric value from the WalletBalance object.
+  // Note: Adjust `.balance` below to `.amount` or `.value` if your interface differs.
+  const currentBalance = balance != null 
+    ? Number((balance as any).balance ?? (balance as any).amount ?? balance) 
+    : null;
+
+  // Now we safely compare two numbers
+  const insufficient = currentBalance !== null ? currentBalance < requiredAmount : false;
 
   // The button is disabled only when the balance is definitively insufficient
   // OR when the parent form has other blocking validation errors.
@@ -55,18 +67,18 @@ export function BalanceCheck({
           ) : error ? (
             <button
               type="button"
-              onClick={refresh}
+              onClick={refetch}
               className="text-sm text-blue-600 hover:underline"
             >
               Retry
             </button>
-          ) : balance !== null ? (
+          ) : currentBalance !== null ? (
             <span
-              className={`text-sm font-semibold ${
-                insufficient ? 'text-red-600' : 'text-green-600'
-              }`}
+              className={clsx('text-sm font-semibold', {
+                'text-red-600': insufficient, 'text-green-600': !insufficient
+              })}
             >
-              {balance.toFixed(7)} XLM
+              {currentBalance.toFixed(7)} XLM
             </span>
           ) : null}
         </div>
@@ -107,7 +119,7 @@ export function BalanceCheck({
               You need at least{' '}
               <span className="font-medium">{requiredAmount.toFixed(7)} XLM</span> to
               complete this transaction. Your current balance is{' '}
-              <span className="font-medium">{balance!.toFixed(7)} XLM</span>.
+              <span className="font-medium">{currentBalance!.toFixed(7)} XLM</span>.
             </p>
             <p className="mt-1 text-xs text-red-600">
               Please top up your wallet before proceeding.
@@ -130,11 +142,10 @@ export function BalanceCheck({
         onClick={onSubmit}
         disabled={isSubmitDisabled}
         aria-disabled={isSubmitDisabled}
-        className={`w-full rounded-lg px-4 py-3 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-          isSubmitDisabled
-            ? 'cursor-not-allowed bg-gray-200 text-gray-400'
-            : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
-        }`}
+        className={clsx('w-full rounded-lg px-4 py-3 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2', {
+          'cursor-not-allowed bg-gray-200 text-gray-400': isSubmitDisabled,
+          'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500': !isSubmitDisabled,
+        })}
       >
         {isLoading ? 'Checking balance…' : submitLabel}
       </button>

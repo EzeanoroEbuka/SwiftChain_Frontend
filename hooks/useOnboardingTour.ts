@@ -35,19 +35,20 @@ export function useOnboardingTour() {
 
   useEffect(() => {
     const savedState = onboardingTourService.getTourState();
-    if (savedState.completed) {
-      setRun(false);
-      setStepIndex(0);
-      return;
-    }
 
-    const boundedStepIndex =
-      savedState.stepIndex >= 0 && savedState.stepIndex < steps.length
-        ? savedState.stepIndex
-        : 0;
+    const [nextRun, nextStep] = (() => {
+      if (savedState.completed) return [false, 0] as const;
+      const bounded =
+        savedState.stepIndex >= 0 && savedState.stepIndex < steps.length
+          ? savedState.stepIndex
+          : 0;
+      return [true, bounded] as const;
+    })();
 
-    setStepIndex(boundedStepIndex);
-    setRun(true);
+    Promise.resolve().then(() => {
+      setRun(nextRun);
+      setStepIndex(nextStep);
+    });
   }, [steps.length]);
 
   const completeTour = useCallback(() => {

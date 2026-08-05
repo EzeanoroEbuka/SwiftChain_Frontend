@@ -63,6 +63,69 @@ export function useRegistration(): UseRegistrationReturn {
     return passwordRegex.test(password);
   }, []);
 
+  const handleFinalSubmit = useCallback(async () => {
+    if (!role) {
+      setErrors({ form: 'Please select a role' });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const registrationData: RegistrationData = {
+        role,
+        email,
+        password,
+        fullName,
+        phone,
+        ...(role === 'driver'
+          ? {
+              licenseNumber,
+              licenseExpiry,
+              vehicleType,
+              vehicleRegistration,
+              vehicleModel,
+            }
+          : {
+              businessName,
+              businessRegistration,
+            }),
+      };
+
+      const response = await registrationService.register(registrationData);
+
+      if (response.success) {
+        // Redirect to login page after successful registration
+        router.push('/login?registered=true');
+      } else {
+        setErrors({ form: response.message || 'Registration failed' });
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        'An error occurred during registration';
+      setErrors({ form: errorMessage });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [
+    role,
+    email,
+    password,
+    fullName,
+    phone,
+    businessName,
+    businessRegistration,
+    licenseNumber,
+    licenseExpiry,
+    vehicleType,
+    vehicleRegistration,
+    vehicleModel,
+    setIsSubmitting,
+    router,
+  ]);
+
   const handlePersonalDetailsSubmit = useCallback(
     async (details: any): Promise<boolean> => {
       const newErrors: Record<string, string> = {};
@@ -158,69 +221,6 @@ export function useRegistration(): UseRegistrationReturn {
     },
     [setDriverDetails, nextStep]
   );
-
-  const handleFinalSubmit = useCallback(async () => {
-    if (!role) {
-      setErrors({ form: 'Please select a role' });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const registrationData: RegistrationData = {
-        role,
-        email,
-        password,
-        fullName,
-        phone,
-        ...(role === 'driver'
-          ? {
-              licenseNumber,
-              licenseExpiry,
-              vehicleType,
-              vehicleRegistration,
-              vehicleModel,
-            }
-          : {
-              businessName,
-              businessRegistration,
-            }),
-      };
-
-      const response = await registrationService.register(registrationData);
-
-      if (response.success) {
-        // Redirect to login page after successful registration
-        router.push('/login?registered=true');
-      } else {
-        setErrors({ form: response.message || 'Registration failed' });
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        'An error occurred during registration';
-      setErrors({ form: errorMessage });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [
-    role,
-    email,
-    password,
-    fullName,
-    phone,
-    businessName,
-    businessRegistration,
-    licenseNumber,
-    licenseExpiry,
-    vehicleType,
-    vehicleRegistration,
-    vehicleModel,
-    setIsSubmitting,
-    router,
-  ]);
 
   return {
     handleRoleSelect,

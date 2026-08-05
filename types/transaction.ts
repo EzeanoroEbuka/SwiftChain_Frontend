@@ -14,6 +14,8 @@ export interface TransactionResponse {
   amount?: number;
   destination?: string;
   source?: string;
+  message?: string;
+  stellarExplorerUrl?: string;
 }
 
 export interface TxTrackerState {

@@ -1,3 +1,0 @@
-module.exports=[9785,a=>{a.n(a.i(19880))},799,a=>{a.n(a.i(86921))},59413,a=>{a.n(a.i(94247))},79164,a=>{a.n(a.i(75284))},11165,a=>{a.n(a.i(30443))},75284,(a,b,c)=>{"use strict";Object.defineProperty(c,"__esModule",{value:!0}),Object.defineProperty(c,"default",{enumerable:!0,get:function(){return f}});let d=a.r(54939),e=a.r(47663);function f(){return(0,d.jsx)(e.HTTPAccessErrorFallback,{status:401,message:"You're not authorized to access this page."})}("function"==typeof c.default||"object"==typeof c.default&&null!==c.default)&&void 0===c.default.__esModule&&(Object.defineProperty(c.default,"__esModule",{value:!0}),Object.assign(c.default,c),b.exports=c.default)}];
-
-//# sourceMappingURL=OneDrive_Documents_Drip_SwiftChain_Frontend_a9e3747a._.js.map

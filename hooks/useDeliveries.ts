@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { deliveriesService } from '../services/deliveries.service';
 import { Delivery } from '../types/delivery';
+import { DeliveryFilterParams } from '../types/filters';
 
-export function useDeliveries() {
+export function useDeliveries(filters?: DeliveryFilterParams) {
   return useQuery<Delivery[], Error>({
-    queryKey: ['deliveries'],
-    queryFn: deliveriesService.getDeliveries,
+    queryKey: ['deliveries', filters],
+    queryFn: () => deliveriesService.getDeliveries(filters),
   });
 }
 

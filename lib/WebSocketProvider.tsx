@@ -1,13 +1,21 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 import { socketService } from '@/lib/websocket';
 
 interface WebSocketContextType {
   isConnected: boolean;
 }
 
-const WebSocketContext = createContext<WebSocketContextType>({ isConnected: false });
+const WebSocketContext = createContext<WebSocketContextType>({
+  isConnected: false,
+});
 
 interface WebSocketProviderProps {
   children: ReactNode;
@@ -18,13 +26,16 @@ interface WebSocketProviderProps {
  * WebSocketProvider — Manages the global socket lifecycle.
  * Ensures the connection is established only when an authenticated token is present.
  */
-export const WebSocketProvider = ({ children, token }: WebSocketProviderProps) => {
+export const WebSocketProvider = ({
+  children,
+  token,
+}: WebSocketProviderProps) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (token) {
       socketService.connectSocket(token);
-      
+
       const socket = socketService.socket;
       if (socket) {
         const onConnect = () => setIsConnected(true);
@@ -34,6 +45,7 @@ export const WebSocketProvider = ({ children, token }: WebSocketProviderProps) =
         socket.on('disconnect', onDisconnect);
 
         // If already connected during initialization
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (socket.connected) setIsConnected(true);
 
         return () => {
@@ -46,7 +58,7 @@ export const WebSocketProvider = ({ children, token }: WebSocketProviderProps) =
     } else {
       socketService.disconnectSocket();
       setIsConnected(false);
-    };
+    }
   }, [token]);
 
   return (
@@ -57,7 +69,7 @@ export const WebSocketProvider = ({ children, token }: WebSocketProviderProps) =
 };
 
 /**
- * Hook to access WebSocket context if needed, though most interactions 
+ * Hook to access WebSocket context if needed, though most interactions
  * should happen through feature-specific hooks like useLiveUpdates.
  */
 export const useWebSocketContext = () => useContext(WebSocketContext);

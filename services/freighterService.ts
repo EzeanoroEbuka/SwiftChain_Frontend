@@ -17,6 +17,7 @@ interface FreighterAPI {
   getPublicKey: () => Promise<string>;
   isAllowed: () => Promise<boolean>;
   setAllowed: () => Promise<boolean>;
+  signTransaction: (transactionEnvelope: string) => Promise<string>;
 }
 
 function getFreighter(): FreighterAPI | null {
@@ -93,5 +94,23 @@ export const freighterService = {
     const publicKey = await freighter.getPublicKey();
     if (!publicKey) throw new Error('Freighter did not return a public key');
     return publicKey;
+  },
+
+  /**
+   * Signs a Stellar transaction envelope using Freighter.
+   * Prompts the user to approve the signature in the wallet extension.
+   */
+  async signTransaction(transactionEnvelope: string): Promise<string> {
+    const freighter = getFreighter();
+    if (!freighter) throw new Error('Freighter is not installed');
+
+    const allowed = await this.isAllowed();
+    if (!allowed) {
+      await this.requestAccess();
+    }
+
+    const signature = await freighter.signTransaction(transactionEnvelope);
+    if (!signature) throw new Error('Freighter failed to sign the transaction');
+    return signature;
   },
 };

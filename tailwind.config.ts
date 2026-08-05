@@ -1,5 +1,7 @@
+// @ts-ignore - Tailwind CSS v4 type resolution
 import type { Config } from 'tailwindcss';
 
+// Tailwind CSS configuration
 const config: Config = {
   darkMode: 'class',
   content: [

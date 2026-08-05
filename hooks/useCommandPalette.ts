@@ -109,31 +109,28 @@ export function useCommandPalette() {
     }
 
     let active = true;
-    setLoading(true);
-    setError(null);
 
     commandPaletteService
       .fetchDeliveries()
       .then((data) => {
-        if (active) {
-          setDeliveries(data);
-          setHasLoadedDeliveries(true);
-        }
+        if (!active) return;
+        setLoading(false);
+        setError(null);
+        setDeliveries(data);
+        setHasLoadedDeliveries(true);
       })
       .catch((fetchError) => {
-        if (active) {
-          setError(
-            fetchError instanceof Error
-              ? fetchError.message
-              : 'Unable to load deliveries',
-          );
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
+        if (!active) return;
+        setLoading(false);
+        setError(
+          fetchError instanceof Error
+            ? fetchError.message
+            : 'Unable to load deliveries',
+        );
       });
+
+    // Show loading only after initiating the request (inside a microtask)
+    Promise.resolve().then(() => { if (active) setLoading(true); });
 
     return () => {
       active = false;

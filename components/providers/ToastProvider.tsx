@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 import { toastService, ToastConfig } from '@/lib/toast';
 import { AlertCircle, CheckCircle, Info, Loader } from 'lucide-react';
@@ -113,25 +113,7 @@ function LoadingToast({
 export default function ToastProvider({
   children,
 }: ToastProviderProps): React.ReactElement {
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  /**
-   * Initialize toast listeners
-   */
-  useEffect(() => {
-    // Subscribe to toast service events
-    const unsubscribe = toastService.subscribe((config: ToastConfig) => {
-      handleToast(config);
-    });
-
-    setIsInitialized(true);
-
-    // Cleanup
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
+  // Initialization flag removed — not needed
   /**
    * Handle toast display based on configuration
    */
@@ -183,6 +165,20 @@ export default function ToastProvider({
         break;
     }
   };
+
+  useEffect(() => {
+    // Subscribe to toast service events
+    const unsubscribe = toastService.subscribe((config: ToastConfig) => {
+      handleToast(config);
+    });
+
+    // initialization completed (no state needed)
+
+    // Cleanup
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <>

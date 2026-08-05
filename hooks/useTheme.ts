@@ -9,14 +9,32 @@ export function useTheme() {
     let isMounted = true;
 
     const loadThemePreference = async () => {
+      const storedTheme = themeService.getStoredThemePreference();
+
+      if (storedTheme) {
+        themeService.applyTheme(storedTheme);
+        setTheme(storedTheme);
+        return;
+      }
+
       try {
         const data = await themeService.getThemePreference();
         if (!isMounted) {
           return;
         }
+
+        if (data.theme === 'system') {
+          themeService.applyTheme('system');
+          setTheme('system');
+          return;
+        }
+
+        themeService.applyTheme(data.theme);
         setTheme(data.theme);
       } catch {
-        // Keep next-themes default behavior (system) on failures.
+        const fallbackTheme = themeService.getInitialTheme();
+        themeService.applyTheme(fallbackTheme);
+        setTheme(fallbackTheme);
       }
     };
 
@@ -29,6 +47,7 @@ export function useTheme() {
 
   const updateTheme = useCallback(
     async (nextTheme: ThemePreference): Promise<void> => {
+      themeService.applyTheme(nextTheme);
       setTheme(nextTheme);
 
       try {

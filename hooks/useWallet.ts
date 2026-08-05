@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useWalletStore, WALLET_STORAGE_KEY } from '@/store/walletStore';
+import { useWalletStore } from '@/store/walletStore';
 import { walletService } from '@/services/walletService';
 import { freighterService } from '@/services/freighterService';
+import { sessionService } from '@/services/sessionService';
 
 /**
  * useWallet — single hook for wallet session management.
@@ -35,6 +36,7 @@ export function useWallet() {
 
   // Detect Freighter on mount (client-side only)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsFreighterInstalled(freighterService.isInstalled());
   }, []);
 
@@ -74,11 +76,10 @@ export function useWallet() {
     } catch {
       // Session cleanup must run even when the API call fails
     } finally {
-      clearWalletState();
-      localStorage.removeItem(WALLET_STORAGE_KEY);
+      sessionService.clearWalletSession();
       router.push('/login');
     }
-  }, [clearWalletState, router]);
+  }, [router]);
 
   return {
     address,
